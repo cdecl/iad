@@ -12,6 +12,8 @@ app = typer.Typer()
 PAGE_SLEEP = 0.2
 
 def parseGoods(s: str):
+    nm = store = price = name = None 
+    
     match = re.search(r'2.*\n\n(.*)', s)
     if match: nm = match.group(1)
 
