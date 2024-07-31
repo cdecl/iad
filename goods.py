@@ -13,18 +13,18 @@ PAGE_SLEEP = 0.2
 
 def parseGoods(s: str):
     nm = store = price = name = None 
-    
-    match = re.search(r'2.*\n\n(.*)', s)
-    if match: nm = match.group(1)
+
+    match = re.search(r'2.*\r?\n\r?\n(.*)', s)
+    if match: nm = match.group(1).strip()
 
     match = re.search(r'스토어명 : (.*)', s)
-    if match: store = match.group(1)
+    if match: store = match.group(1).strip()
 
     match = re.search(r'가격 : (.*)', s)
-    if match: price = match.group(1)
+    if match: price = match.group(1).strip()
 
     match = re.search(r'상품명 : (.*)', s)
-    if match: name = match.group(1)
+    if match: name = match.group(1).strip()
 
     return (nm, store, price, name)
 
