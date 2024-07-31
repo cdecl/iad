@@ -8,8 +8,7 @@ import re
 
 app = typer.Typer()
 
-# Chrome 웹드라이버 설정
-
+PAGE_SLEEP = 0.2
 
 @app.command()
 def code(id: str, idx: int):
@@ -19,7 +18,7 @@ def code(id: str, idx: int):
     driver.get(url)
 
     # 페이지 로딩을 기다림
-    time.sleep(1)  # 필요에 따라 조정
+    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
     # JavaScript 코드
     script = """
@@ -58,7 +57,7 @@ def place(idx: int, q: str = typer.Argument("")):
     driver.get(url)
 
     # 페이지 로딩을 기다림
-    time.sleep(1)  # 필요에 따라 조정
+    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
     # JavaScript 코드
     script = """
