@@ -19,10 +19,14 @@ def create_driver():
 
 @app.command()
 def code(idx: int, id: str, filter = typer.Argument("100")):
+    driver = create_driver()
+    code_internal(idx, id, filter, driver)
+    driver.quit()
+
+def code_internal(idx: int, id: str, filter: str, driver):
     url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter={filter}'
     print(url)
 
-    driver = create_driver()
     driver.get(url)
 
     # 페이지 로딩을 기다림
@@ -52,7 +56,7 @@ def code(idx: int, id: str, filter = typer.Argument("100")):
             print(result)
             clipboard.copy(result.split(' ')[1])
         i += 1
-    driver.quit()
+    
 
 # 놀거리 
 @app.command()
@@ -97,9 +101,9 @@ def place(idx: int, filter: str = typer.Argument("100")):
 
     place = getPlaceCode(results)
     print(f'place: {place}')
-    driver.quit()
     
-    code(idx, place, filter)
+    code_internal(idx, place, filter, driver)
+    driver.quit()
 
 
 def getPlaceCode(url: str):
