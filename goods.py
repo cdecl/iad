@@ -77,8 +77,8 @@ def run():
 
     # JavaScript 코드 실행 및 결과 가져오기
     results = driver.execute_script(script)
-    driver.quit()
     # print(results)
+
     items = json.loads(results)
     price_match = False
 
@@ -87,7 +87,7 @@ def run():
             item["price"].replace(',', '') == gd[2].replace(',', '') and 
             item["name"].strip() == gd[3].strip()):
             print(item)
-            page(item["url"])
+            page(item["url"], driver)
             price_match = True
             exit
  
@@ -96,12 +96,13 @@ def run():
             if (item["store"] == gd[1] and 
                 item["name"].strip() == gd[3].strip()):
                 print(item)
-                page(item["url"])
+                page(item["url"], driver)
                 exit
 
+    driver.quit()
 
-def page(url: str):
-    driver = create_driver()
+def page(url: str, driver):
+    # driver = create_driver()
     driver.get(url)
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
@@ -112,7 +113,7 @@ def page(url: str):
     print(pdcode)
     clipboard.copy(pdcode)
 
-    driver.quit()
+    # driver.quit()
 
 
 def getProductCode(url: str):
