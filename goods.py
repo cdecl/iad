@@ -12,9 +12,18 @@ app = typer.Typer()
 
 PAGE_SLEEP = 0.2
 
-
 def create_driver():
+    USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
+    
     chrome_options = Options()
+    chrome_options.add_argument("--headless=new")  # 헤드리스 모드
+    chrome_options.add_argument("--disable-gpu")  # GPU 비활성화
+    chrome_options.add_argument("--no-sandbox")  # 샌드박스 비활성화
+    chrome_options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화
+    chrome_options.add_argument("--disable-extensions")  # 확장 프로그램 비활성화‘
+    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+    chrome_options.add_argument(f"user-agent={USER_AGENT}")
+
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver
 
@@ -118,7 +127,7 @@ def page(url: str, driver):
 
 def getProductCode(url: str):
     match = re.search(r'/(?:products)/(\d+)', url)
-    extracted_value = "값을 추출할 수 없습니다."
+    extracted_value = f"값을 추출할 수 없습니다 : {url}"
     if match:
         extracted_value = match.group(1)
     return extracted_value
