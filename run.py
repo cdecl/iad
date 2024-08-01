@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import typer
@@ -10,12 +11,18 @@ app = typer.Typer()
 
 PAGE_SLEEP = 0.2
 
+
+def create_driver():
+    chrome_options = Options()
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    return driver
+
 @app.command()
 def code(idx: int, id: str, filter = typer.Argument("100")):
     url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter={filter}'
     print(url)
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = create_driver()
     driver.get(url)
 
     # 페이지 로딩을 기다림
@@ -36,6 +43,7 @@ def code(idx: int, id: str, filter = typer.Argument("100")):
 
     # JavaScript 코드 실행 및 결과 가져오기
     results = driver.execute_script(script)
+    # print(results)
 
     i = 1
     # 결과 출력
@@ -58,7 +66,7 @@ def place(idx: int, filter: str = typer.Argument("100")):
 
     url = f'https://m.search.naver.com/search.naver?query={q}'
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = create_driver()
     driver.get(url)
 
     # 페이지 로딩을 기다림

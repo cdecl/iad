@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import typer
@@ -10,6 +11,12 @@ import json
 app = typer.Typer()
 
 PAGE_SLEEP = 0.2
+
+
+def create_driver():
+    chrome_options = Options()
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    return driver
 
 def parseGoods(s: str):
     nm = store = price = name = None 
@@ -39,7 +46,7 @@ def run(q: str = typer.Argument("")):
     q = gd[0]
     url = f'https://m.search.naver.com/search.naver?query={q}'
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = create_driver()
     driver.get(url)
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
@@ -84,7 +91,7 @@ def run(q: str = typer.Argument("")):
     driver.quit()
 
 def page(url: str):
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = create_driver()
     driver.get(url)
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
