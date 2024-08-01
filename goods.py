@@ -36,16 +36,16 @@ def parseGoods(s: str):
     return (nm, store, price, name)
 
 @app.command()
-def run(q: str = typer.Argument("")):
-    if not q:
-        q = clipboard.paste()
+def run():
+    q = clipboard.paste()
     
     gd = parseGoods(q)
     print(gd)
     
     q = gd[0]
     url = f'https://m.search.naver.com/search.naver?query={q}'
-
+    print(url)
+    
     driver = create_driver()
     driver.get(url)
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
