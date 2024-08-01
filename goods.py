@@ -77,8 +77,10 @@ def run():
 
     # JavaScript 코드 실행 및 결과 가져오기
     results = driver.execute_script(script)
+    driver.quit()
     # print(results)
     items = json.loads(results)
+    price_match = False
 
     for item in items:
         if (item["store"] == gd[1] and 
@@ -86,9 +88,17 @@ def run():
             item["name"].strip() == gd[3].strip()):
             print(item)
             page(item["url"])
+            price_match = True
             exit
  
-    driver.quit()
+    if not price_match:
+        for item in items:
+            if (item["store"] == gd[1] and 
+                item["name"].strip() == gd[3].strip()):
+                print(item)
+                page(item["url"])
+                exit
+
 
 def page(url: str):
     driver = create_driver()
