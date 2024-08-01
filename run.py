@@ -11,8 +11,9 @@ app = typer.Typer()
 PAGE_SLEEP = 0.2
 
 @app.command()
-def code(id: str, idx: int):
-    url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter=100'
+def code(idx: int, id: str, filter = typer.Argument("100")):
+    url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter={filter}'
+    print(url)
 
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get(url)
@@ -45,11 +46,15 @@ def code(id: str, idx: int):
         i += 1
     driver.quit()
 
-
+# 놀거리 
 @app.command()
-def place(idx: int, q: str = typer.Argument("")):
-    if not q:
-        q = clipboard.paste()
+def play(idx: int, filter: str = typer.Argument("30")):
+    place(idx, filter)
+
+#명소 
+@app.command()
+def place(idx: int, filter: str = typer.Argument("100")):
+    q = clipboard.paste()
 
     url = f'https://m.search.naver.com/search.naver?query={q}'
 
@@ -86,11 +91,11 @@ def place(idx: int, q: str = typer.Argument("")):
     print(f'place: {place}')
     driver.quit()
     
-    code(place, idx)
+    code(idx, place, filter)
 
 
 def getPlaceCode(url: str):
-    match = re.search(r'/(?:place|restaurant)/(\d+)', url)
+    match = re.search(r'/(?:place|restaurant|hairshop)/(\d+)', url)
     extracted_value = "값을 추출할 수 없습니다."
     if match:
         extracted_value = match.group(1)
