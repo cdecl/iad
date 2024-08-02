@@ -139,40 +139,30 @@ def run(q: str = typer.Argument("")):
     driver.get(url)
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
-    # JavaScript 코드
-    script = """
-    var elements = document.querySelectorAll('._product');
-    var elementArray = [...elements];
-    var results = [];
-    var i = 1
-    elementArray.forEach(function(node) {
-        url = node.querySelector("a").getAttribute("href");
-        name = node.querySelector("strong.name").textContent;
-        price = node.querySelector("div.price span.txt strong").textContent;
-        store = node.querySelector("div.store span.txt").textContent;
+    products = driver.find_elements(By.CSS_SELECTOR, '._product')
+    results = []
 
-        const r = {
-            "name": name,
-            "price": price,
-            "store": store,
-            "url": url
-        };
+    for product in products:
+        try:
+            url = product.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+            name = product.find_element(By.CSS_SELECTOR, 'strong.name').text
+            price = product.find_element(By.CSS_SELECTOR, 'div.price span.txt strong').text
+            store = product.find_element(By.CSS_SELECTOR, 'div.store span.txt').text
 
-        results.push(r);
-        i++;
-    });
-    return JSON.stringify(results);
-    """
+            result = {
+                "name": name,
+                "price": price,
+                "store": store,
+                "url": url
+            }
+            results.append(result)
+        except:
+            continue
 
-    # JavaScript 코드 실행 및 결과 가져오기
-    results = driver.execute_script(script)
-    # print(results)
-
-    items = json.loads(results)
     price_match = False
     pdcode = None
 
-    for item in items:
+    for item in results:
         if (item["store"] == gd[1] and 
             item["price"].replace(',', '') == gd[2].replace(',', '') and 
             item["name"].strip() == gd[3].strip()):
@@ -182,7 +172,7 @@ def run(q: str = typer.Argument("")):
             exit
  
     if not price_match:
-        for item in items:
+        for item in results:
             if (item["store"] == gd[1] and 
                 item["name"].strip() == gd[3].strip()):
                 print(item)
@@ -201,7 +191,7 @@ def getUrlCode(url: str, driver):
     print(current_url)
 
     pdcode = getProductCode(current_url)
-    print(pdcode)
+    print(f'FOUND : {pdcode}')
     clipboard.copy(pdcode)
 
     return pdcode
