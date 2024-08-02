@@ -2,6 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+
 import time
 import typer
 import clipboard
@@ -27,6 +29,49 @@ def create_driver():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver
 
+
+def create_mobile_driver():
+    USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/79.0.3945.88 Mobile/15E148 Safari/604.1"
+    
+    chrome_options = Options()
+    chrome_options.add_argument("--headless=new")  # 헤드리스 모드
+    chrome_options.add_argument("--disable-gpu")  # GPU 비활성화
+    chrome_options.add_argument("--no-sandbox")  # 샌드박스 비활성화
+    chrome_options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화
+    chrome_options.add_argument("--disable-extensions")  # 확장 프로그램 비활성화‘
+    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+    chrome_options.add_argument(f"user-agent={USER_AGENT}")
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    return driver
+
+
+@app.command()
+def list(url: str = typer.Argument("")):
+    if not url:
+        url = clipboard.paste()
+    print(url)
+
+    driver = create_mobile_driver()
+    driver.get(url)
+
+    time.sleep(PAGE_SLEEP) 
+    list_items = driver.find_elements(By.CLASS_NAME, 'list-item')
+
+    for item in list_items:
+        badge = item.find_element(By.CSS_SELECTOR, 'div.list-item__right > span')
+        if '진행중' == badge.text.strip():
+            href = item.find_element(By.TAG_NAME, 'a').get_attribute('href')
+            print(f'{badge.text} : {href}')
+
+            try:
+                page(href)
+            except: 
+                pass
+            
+            time.sleep(2) 
+
+
 def parseGoods(s: str):
     nm = store = price = name = None 
 
@@ -44,9 +89,41 @@ def parseGoods(s: str):
 
     return (nm, store, price, name)
 
+
 @app.command()
-def run():
-    q = clipboard.paste()
+def page(url: str = typer.Argument("")):
+    if not url:
+        url = clipboard.paste()
+    print(url)
+
+    driver = create_mobile_driver()
+    driver.get(url)
+
+    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
+
+    qinfo = driver.find_element(By.CLASS_NAME, 'quiz-info')
+    q_txt = qinfo.text
+
+    print(q_txt)
+    print('-' * 20)
+
+    ## RUN 
+    pdcode = run(q_txt)
+
+    quizAnswer = driver.find_element(By.ID, 'quizAnswer')
+    quizAnswer.send_keys(pdcode)
+
+    save_button = driver.find_element(By.ID, 'saveBtn')
+    save_button.click()
+
+    print(f'{pdcode} → save_button.click()')
+    driver.quit()
+
+
+@app.command()
+def run(q: str = typer.Argument("")):
+    if not q:
+        q = clipboard.paste()
     
     gd = parseGoods(q)
     print(gd)
@@ -90,13 +167,14 @@ def run():
 
     items = json.loads(results)
     price_match = False
+    pdcode = None
 
     for item in items:
         if (item["store"] == gd[1] and 
             item["price"].replace(',', '') == gd[2].replace(',', '') and 
             item["name"].strip() == gd[3].strip()):
             print(item)
-            page(item["url"], driver)
+            pdcode = getUrlCode(item["url"], driver)
             price_match = True
             exit
  
@@ -105,12 +183,13 @@ def run():
             if (item["store"] == gd[1] and 
                 item["name"].strip() == gd[3].strip()):
                 print(item)
-                page(item["url"], driver)
+                pdcode = getUrlCode(item["url"], driver)
                 exit
 
     driver.quit()
+    return pdcode
 
-def page(url: str, driver):
+def getUrlCode(url: str, driver):
     # driver = create_driver()
     driver.get(url)
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
@@ -122,6 +201,7 @@ def page(url: str, driver):
     print(pdcode)
     clipboard.copy(pdcode)
 
+    return pdcode
     # driver.quit()
 
 
