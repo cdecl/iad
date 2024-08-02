@@ -47,9 +47,7 @@ def create_mobile_driver():
 
 
 @app.command()
-def list(url: str = typer.Argument("")):
-    if not url:
-        url = clipboard.paste()
+def list(url: str):
     print(url)
 
     driver = create_mobile_driver()
@@ -68,7 +66,7 @@ def list(url: str = typer.Argument("")):
                 page(href)
             except: 
                 pass
-            
+
             time.sleep(2) 
 
 
@@ -87,13 +85,11 @@ def parseGoods(s: str):
     match = re.search(r'상품명 : (.*)', s)
     if match: name = match.group(1).strip()
 
-    return (nm, store, price, name)
+    return [nm, store, price, name]
 
 
 @app.command()
-def page(url: str = typer.Argument("")):
-    if not url:
-        url = clipboard.paste()
+def page(url: str):
     print(url)
 
     driver = create_mobile_driver()
@@ -103,20 +99,19 @@ def page(url: str = typer.Argument("")):
 
     qinfo = driver.find_element(By.CLASS_NAME, 'quiz-info')
     q_txt = qinfo.text
-
     print(q_txt)
-    print('-' * 20)
 
     ## RUN 
     pdcode = run(q_txt)
-
-    quizAnswer = driver.find_element(By.ID, 'quizAnswer')
-    quizAnswer.send_keys(pdcode)
-
-    save_button = driver.find_element(By.ID, 'saveBtn')
-    save_button.click()
+    
+    if pdcode:
+        quizAnswer = driver.find_element(By.ID, 'quizAnswer')
+        quizAnswer.send_keys(pdcode)
+        save_button = driver.find_element(By.ID, 'saveBtn')
+        save_button.click()
 
     print(f'{pdcode} → save_button.click()')
+
     driver.quit()
 
 
@@ -127,7 +122,15 @@ def run(q: str = typer.Argument("")):
     
     gd = parseGoods(q)
     print(gd)
-    
+
+    if not gd[1]:
+        print("QUIZ 형식이 맞지 않습니다.")
+        return None
+
+    if not gd[0]: gd[0] = gd[3]
+    if not gd[2]: gd[2] = "0"
+    print(gd)
+
     q = gd[0]
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
