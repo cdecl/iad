@@ -117,9 +117,12 @@ def page(url: str):
 
 @app.command()
 def run(q: str = typer.Argument("")):
+    clipboard_use = False
+
     if not q:
         q = clipboard.paste()
-    
+        clipboard_use = True
+
     gd = parseGoods(q)
     print(gd)
 
@@ -168,6 +171,7 @@ def run(q: str = typer.Argument("")):
             item["name"].strip() == gd[3].strip()):
             print(item)
             pdcode = getUrlCode(item["url"], driver)
+            if clipboard_use: clipboard.copy(pdcode)
             price_match = True
             exit
  
@@ -177,6 +181,7 @@ def run(q: str = typer.Argument("")):
                 item["name"].strip() == gd[3].strip()):
                 print(item)
                 pdcode = getUrlCode(item["url"], driver)
+                if clipboard_use: clipboard.copy(pdcode)
                 exit
 
     driver.quit()
@@ -192,7 +197,6 @@ def getUrlCode(url: str, driver):
 
     pdcode = getProductCode(current_url)
     print(f'FOUND : {pdcode}')
-    clipboard.copy(pdcode)
 
     return pdcode
     # driver.quit()
