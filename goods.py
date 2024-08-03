@@ -67,32 +67,18 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), url: s
 
             if not verbose:
                 try:
-                    page(href)
+                    success = page(href)
+                    if success:
+                        time.sleep(2) 
                 except: 
                     pass
-                time.sleep(2) 
+        print("-" * 40)
+        print()
 
-
-def parseGoods(s: str):
-    nm = store = price = name = None 
-
-    match = re.search(r'2.*\r?\n\r?\n(.*)', s, re.M)
-    if match: nm = match.group(1).strip()
-
-    match = re.search(r'스토어명 : (.*)', s)
-    if match: store = match.group(1).strip()
-
-    match = re.search(r'가격 : (.*)', s)
-    if match: price = match.group(1).strip()
-
-    match = re.search(r'상품명 : (.*)', s)
-    if match: name = match.group(1).strip()
-
-    return [nm, store, price, name]
-
-
+        
 @app.command()
 def page(url: str):
+    success = False
     print(url)
 
     driver = create_mobile_driver()
@@ -112,10 +98,31 @@ def page(url: str):
         quizAnswer.send_keys(pdcode)
         save_button = driver.find_element(By.ID, 'saveBtn')
         save_button.click()
-
-    print(f'{pdcode} → save_button.click()')
+        success = True
+        print(f'{pdcode} → save_button.click(success)')
+    else:
+        print(f'{pdcode} → save_button.click(failed)')
 
     driver.quit()
+    return success
+
+
+def parseGoods(s: str):
+    nm = store = price = name = None 
+
+    match = re.search(r'2.*\r?\n\r?\n(.*)', s, re.M)
+    if match: nm = match.group(1).strip()
+
+    match = re.search(r'스토어명 : (.*)', s)
+    if match: store = match.group(1).strip()
+
+    match = re.search(r'가격 : (.*)', s)
+    if match: price = match.group(1).strip()
+
+    match = re.search(r'상품명 : (.*)', s)
+    if match: name = match.group(1).strip()
+
+    return [nm, store, price, name]
 
 
 @app.command()
