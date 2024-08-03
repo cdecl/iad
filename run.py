@@ -45,12 +45,41 @@ def create_mobile_driver():
     return driver
 
 
+def extract_consonants(hangul_text: str) -> str:
+    if hangul_text is None:
+        hangul_text = ""
+
+    CHOSUNG_LIST = [
+        'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+    ]
+
+    result = []
+    for char in hangul_text:
+        # 한글 유니코드 범위 안에 있는지 확인
+        if '가' <= char <= '힣':
+            code = ord(char) - ord('가')
+            chosung_index = code // 588
+            result.append(CHOSUNG_LIST[chosung_index])
+        else:
+            result.append(char)  # 한글이 아닌 경우 그대로 추가
+
+    return ''.join(result)
+
+
 def getFilter(s: str):
     match = re.search(r'3. \[([^]]+)\].*\[([^]]+)번째\]', s)
     info = None
     if match:
         info = match.groups()
         print(info)
+    return info
+
+
+def getFilterConsonants(s: str):
+    match = re.search(r'초성은 (.*) 입니다.', s)
+    info = None
+    if match:
+        info = match.group(1)
     return info
 
 def getFilterCode(s: str):
@@ -85,13 +114,17 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), url: s
 
             if not verbose:
                 try:
-                    page(href)
+                    success = page(href)
+                    if success:
+                        time.sleep(2) 
                 except: 
                     pass
-                time.sleep(2) 
+        print("-" * 40)
+        print()
 
 @app.command()
 def page(url: str):
+    success = False
     print(url)
 
     driver = create_mobile_driver()
@@ -109,32 +142,38 @@ def page(url: str):
     info = getFilter(info_txt)
     order = int(info[1])
     filterCode = getFilterCode(info[0])
+    quisConsonants = getFilterConsonants(info_txt)
 
     print(f'copyTxt: {txt}')
     print(f'filterCode: {filterCode}, order: {order}')
 
     placeName = None
     if filterCode:
-        placeName = place(order, filterCode, txt)
+        placeName = place(order, filterCode, txt, quisConsonants)
+        placeNameConsonants = extract_consonants(placeName)
+        print(f'추출자음: {placeNameConsonants} / 예시자음: {quisConsonants}')
 
-        if placeName:
+        if placeName and placeNameConsonants == quisConsonants:
             searchAnswer = driver.find_element(By.ID, 'searchAnswer')
             searchAnswer.send_keys(placeName)
             saveBtn = driver.find_element(By.ID, 'saveBtn')
             saveBtn.click()
-
-        print(f'{placeName} → save_button.click()')
+            success = True
+            print(f'{placeName} → save_button.click(success)')
+        else:
+            print(f'{placeName} → save_button.click(failed)')
 
     driver.quit()
+    return success
 
 @app.command()
 def code(idx: int, id: str, filter = typer.Argument("100")):
     driver = create_driver()
-    retCode = code_internal(idx, id, filter, driver)
+    retCode = code_internal(driver, idx, id, filter)
     driver.quit()
     return retCode
 
-def code_internal(idx: int, id: str, filter: str, driver):
+def code_internal(driver, idx: int, id: str, filter: str, quisConsonants = typer.Argument("")):
     retCode = None
     url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter={filter}'
     print(url)
@@ -150,12 +189,21 @@ def code_internal(idx: int, id: str, filter: str, driver):
     for el in elements:
         results.append(f"{el.text}")
 
-    for i, r in enumerate(results, start=1):
-        if i == (idx - 1):
-            print(f'{i}: {r}')
-        if i == idx:
-            print(f'→ {i}: {r}')
-            retCode = r
+    print(f'quisConsonants : {quisConsonants}')
+    if quisConsonants:
+        for r in results:
+            extract = extract_consonants(r)
+            if quisConsonants == extract:
+                print(f'자음매치: {r}')
+                retCode = r
+        
+    if not retCode:
+        for i, r in enumerate(results, start=1):
+            if i == (idx - 1):
+                print(f'{i}: {r}')
+            if i == idx:
+                print(f'→ {i}: {r}')
+                retCode = r
 
     return retCode
 
@@ -166,7 +214,7 @@ def play(idx: int, filter: str = typer.Argument("30"), q: str = typer.Argument("
 
 #명소 
 @app.command()
-def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument("")):
+def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument(""), quisConsonants = typer.Argument("")):
     clipboard_use = False
     placeName = None
 
@@ -200,7 +248,7 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
     print(f'place: {place}')
     
     if place:
-        placeName = code_internal(idx, place, filter, driver)
+        placeName = code_internal(driver, idx, place, filter, quisConsonants)
         if clipboard_use: clipboard.copy(placeName)
 
     driver.quit()
