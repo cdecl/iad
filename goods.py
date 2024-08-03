@@ -47,7 +47,10 @@ def create_mobile_driver():
 
 
 @app.command()
-def list(url: str):
+def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), url: str = typer.Argument("")):
+    if not url:
+        print("url is missing !!")
+        return 
     print(url)
 
     driver = create_mobile_driver()
@@ -62,12 +65,12 @@ def list(url: str):
             href = item.find_element(By.TAG_NAME, 'a').get_attribute('href')
             print(f'{badge.text} : {href}')
 
-            try:
-                page(href)
-            except: 
-                pass
-
-            time.sleep(2) 
+            if not verbose:
+                try:
+                    page(href)
+                except: 
+                    pass
+                time.sleep(2) 
 
 
 def parseGoods(s: str):
