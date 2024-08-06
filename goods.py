@@ -47,7 +47,7 @@ def create_mobile_driver():
 
 
 @app.command()
-def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), url: str = typer.Argument("")):
+def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interval: int = typer.Option(5, "--i/", "-i/", help="interval"), url: str = typer.Argument("")):
     if not url:
         print("url is missing !!")
         return 
@@ -69,7 +69,8 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), url: s
                 try:
                     success = page(href)
                     if success:
-                        time.sleep(2) 
+                        time.sleep(interval) 
+                        print(f'interval: {interval}sec')
                 except: 
                     pass
         print("-" * 40)
