@@ -214,7 +214,7 @@ def play(idx: int, filter: str = typer.Argument("30"), q: str = typer.Argument("
 
 #명소 
 @app.command()
-def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument(""), quisConsonants = typer.Argument("")):
+def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument(""), quistext: str = typer.Argument("")):
     clipboard_use = False
     placeName = None
 
@@ -248,7 +248,7 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
     print(f'place: {place}')
     
     if place:
-        placeName = code_internal(driver, idx, place, filter, quisConsonants)
+        placeName = code_internal(driver, idx, place, filter, quistext)
         if clipboard_use: clipboard.copy(placeName)
 
     driver.quit()
