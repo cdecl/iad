@@ -59,11 +59,12 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interv
     time.sleep(PAGE_SLEEP) 
     list_items = driver.find_elements(By.CLASS_NAME, 'list-item')
 
-    for item in list_items:
+    list_cnt = len(list_items)
+    for idx, item in enumerate(list_items, start=1):
         badge = item.find_element(By.CSS_SELECTOR, 'div.list-item__right > span')
         if '진행중' == badge.text.strip():
             href = item.find_element(By.TAG_NAME, 'a').get_attribute('href')
-            print(f'{badge.text} : {href}')
+            print(f'{badge.text} ({idx}/{list_cnt}): {href}')
 
             if not verbose:
                 try:
