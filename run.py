@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+from driver import create_driver, create_mobile_driver
 
 import time
 import typer
@@ -12,38 +13,6 @@ import re
 app = typer.Typer()
 
 PAGE_SLEEP = 0.2
-
-def create_driver():
-    USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
-
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new")  # 헤드리스 모드
-    chrome_options.add_argument("--disable-gpu")  # GPU 비활성화
-    chrome_options.add_argument("--no-sandbox")  # 샌드박스 비활성화
-    chrome_options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화
-    chrome_options.add_argument("--disable-extensions")  # 확장 프로그램 비활성화‘
-    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-    chrome_options.add_argument(f"user-agent={USER_AGENT}")
-
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    return driver
-
-
-def create_mobile_driver():
-    USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/79.0.3945.88 Mobile/15E148 Safari/604.1"
-    
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new")  # 헤드리스 모드
-    chrome_options.add_argument("--disable-gpu")  # GPU 비활성화
-    chrome_options.add_argument("--no-sandbox")  # 샌드박스 비활성화
-    chrome_options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화
-    chrome_options.add_argument("--disable-extensions")  # 확장 프로그램 비활성화‘
-    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
-    chrome_options.add_argument(f"user-agent={USER_AGENT}")
-
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    return driver
-
 
 def extract_consonants(hangul_text: str) -> str:
     if hangul_text is None:
