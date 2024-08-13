@@ -220,7 +220,57 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
     
     if place:
         placeName = code_internal(driver, idx, place, filter, quistext)
-        if clipboard_use: clipboard.copy(placeName)
+        if clipboard_use: 
+            print(f'placeName: {placeName} → clipboard.copy')
+            clipboard.copy(placeName)
+
+    driver.quit()
+    return placeName
+
+
+@app.command()
+def telno(q: str = typer.Argument("")):
+    clipboard_use = False
+    placeName = None
+
+    if not q:
+        q = clipboard.paste()
+        clipboard_use = True
+
+    url = f'https://m.search.naver.com/search.naver?query={q}'
+    print(url)
+
+    driver = create_driver()
+    driver.get(url)
+
+    # 페이지 로딩을 기다림
+    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
+
+    try:
+        # 'ouxiq' 클래스를 가진 노드 찾기
+        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq')
+        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+    except:
+        try:
+            # 'LylZZ' 클래스를 가진 노드 찾기
+            node = driver.find_element(By.CSS_SELECTOR, '.LylZZ')
+            url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+        except:
+            url = "Node with class 'ouxiq' and 'LylZZ' not found."
+
+    print(f'url: {url}')
+    driver.get(url)
+
+    try:
+        tno = driver.find_element(By.CSS_SELECTOR, '.xlx7Q')
+        telnoText = tno.text
+        print(f'TELNO: {telnoText}')
+
+        if clipboard_use:
+            print(f'TELNO: {telnoText} → clipboard.copy')
+            clipboard.copy(telnoText)
+    except:
+        print('NOT FOUND')
 
     driver.quit()
     return placeName
