@@ -111,28 +111,41 @@ def page(url: str):
     print(f'info: {info_txt}')
 
     info = getFilter(info_txt)
-    order = int(info[1])
-    filterCode = getFilterCode(info[0])
-    quisConsonants = getFilterConsonants(info_txt)
 
-    print(f'copyTxt: {txt}')
-    print(f'filterCode: {filterCode}, order: {order}')
+    if info:        
+        order = int(info[1])
+        filterCode = getFilterCode(info[0])
+        quisConsonants = getFilterConsonants(info_txt)
 
-    placeName = None
-    if filterCode:
-        placeName = place(order, filterCode, txt, quisConsonants)
-        placeNameConsonants = extract_consonants(placeName)
-        print(f'추출자음: {placeNameConsonants} / 예시자음: {quisConsonants}')
+        print(f'copyTxt: {txt}')
+        print(f'filterCode: {filterCode}, order: {order}')
 
-        if placeName and placeNameConsonants == quisConsonants:
-            searchAnswer = driver.find_element(By.ID, 'searchAnswer')
-            searchAnswer.send_keys(placeName)
-            saveBtn = driver.find_element(By.ID, 'saveBtn')
-            saveBtn.click()
-            success = True
-            print(f'{placeName} → save_button.click(success)')
-        else:
-            print(f'{placeName} → save_button.click(failed)')
+        placeName = None
+        if filterCode:
+            placeName = place(order, filterCode, txt, quisConsonants)
+            placeNameConsonants = extract_consonants(placeName)
+            print(f'추출자음: {placeNameConsonants} / 예시자음: {quisConsonants}')
+
+            if placeName and placeNameConsonants == quisConsonants:
+                searchAnswer = driver.find_element(By.ID, 'searchAnswer')
+                searchAnswer.send_keys(placeName)
+                saveBtn = driver.find_element(By.ID, 'saveBtn')
+                saveBtn.click()
+                success = True
+                print(f'{placeName} → save_button.click(success)')
+            else:
+                print(f'{placeName} → save_button.click(failed)')
+    else:
+        print("TELNO MODE")
+        telnoText = telno(txt)
+        telnoText = telnoText.replace('-', '')
+
+        searchAnswer = driver.find_element(By.ID, 'searchAnswer')
+        searchAnswer.send_keys(telnoText)
+        saveBtn = driver.find_element(By.ID, 'saveBtn')
+        saveBtn.click()
+        success = True
+        print(f'TELNO: {telnoText} → save_button.click(success)')
 
     driver.quit()
     return success
@@ -250,6 +263,7 @@ def telno(q: str = typer.Argument("")):
         url = "Node with class 'ouxiq' and 'LylZZ' not found."
 
     print(f'place url: {url}')
+    telnoText = None
 
     if 'http' in url:
         driver.get(url)
@@ -265,7 +279,7 @@ def telno(q: str = typer.Argument("")):
             print('NOT FOUND')
 
     driver.quit()
-    return placeName
+    return telnoText
 
 
 def getPlaceCode(url: str):
