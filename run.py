@@ -282,6 +282,93 @@ def telno(q: str = typer.Argument("")):
     return telnoText
 
 
+@app.command()
+def home(q: str = typer.Argument("")):
+    clipboard_use = False
+    placeName = None
+
+    if not q:
+        q = clipboard.paste()
+        clipboard_use = True
+
+    url = f'https://m.search.naver.com/search.naver?query={q}'
+    print(url)
+
+    driver = create_driver()
+    driver.get(url)
+
+    # 페이지 로딩을 기다림
+    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
+
+    try:
+        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F') # , OR conditoin
+        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+    except:
+        url = "Node with class 'ouxiq' and 'LylZZ' not found."
+
+    print(f'place url: {url}')
+
+    if 'http' in url:
+        driver.get(url)
+        try:
+            tno = driver.find_element(By.CSS_SELECTOR, '.xlx7Q')
+            homeUrl = driver.current_url
+            print(f'HOME: {homeUrl}')
+
+            fav = homeUrl.replace('entry=pll', 'from=search')
+            print(f'FAV: {fav}')
+
+            if clipboard_use:
+                print(f'HOME: {homeUrl} → clipboard.copy')
+                clipboard.copy(homeUrl)
+        except:
+            print('NOT FOUND')
+
+    driver.quit()
+
+@app.command()
+def info(q: str = typer.Argument("")):
+    clipboard_use = False
+    placeName = None
+
+    if not q:
+        q = clipboard.paste()
+        clipboard_use = True
+
+    url = f'https://m.search.naver.com/search.naver?query={q}'
+    print(url)
+
+    driver = create_driver()
+    driver.get(url)
+
+    # 페이지 로딩을 기다림
+    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
+
+    try:
+        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F') # , OR conditoin
+        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+    except:
+        url = "Node with class 'ouxiq' and 'LylZZ' not found."
+
+    print(f'place url: {url}')
+
+    if 'http' in url:
+        place = getPlaceCode(url)
+        print(f'place: {place}')
+
+        url = f'https://m.place.naver.com/restaurant/{place}/information?entry=pll'
+        driver.get(url)
+
+        try:
+            ninfo = driver.find_element(By.CSS_SELECTOR, '.T8RFa')
+            infoText = ninfo.text
+            print(f'infoText: {infoText}')
+        except:
+            print('NOT FOUND')
+
+    driver.quit()
+
+
 def getPlaceCode(url: str):
     match = re.search(r'/(?:place|restaurant|hairshop)/(\d+)', url)
     place = None
