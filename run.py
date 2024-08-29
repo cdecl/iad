@@ -362,7 +362,13 @@ def info(q: str = typer.Argument("")):
         try:
             ninfo = driver.find_element(By.CSS_SELECTOR, '.T8RFa')
             infoText = ninfo.text
-            print(f'infoText: {infoText}')
+
+            infoTexts = infoText.split('\n')
+            for t in infoTexts:
+                print(t)
+                print(extract_consonants(t))
+
+            # print(f'infoText: {infoText}')
         except:
             print('NOT FOUND')
 
