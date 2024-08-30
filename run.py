@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-from driver import create_driver, create_mobile_driver
+from driver import create_mobile_driver
 
 import time
 import typer
@@ -152,7 +152,7 @@ def page(url: str):
 
 @app.command()
 def code(idx: int, id: str, filter = typer.Argument("100")):
-    driver = create_driver()
+    driver = create_mobile_driver()
     retCode = code_internal(driver, idx, id, filter)
     driver.quit()
     return retCode
@@ -209,7 +209,7 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
 
-    driver = create_driver()
+    driver = create_mobile_driver()
     driver.get(url)
 
     # 페이지 로딩을 기다림
@@ -250,7 +250,7 @@ def telno(q: str = typer.Argument("")):
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
 
-    driver = create_driver()
+    driver = create_mobile_driver()
     driver.get(url)
 
     # 페이지 로딩을 기다림
@@ -294,7 +294,7 @@ def home(q: str = typer.Argument("")):
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
 
-    driver = create_driver()
+    driver = create_mobile_driver()
     driver.get(url)
 
     # 페이지 로딩을 기다림
@@ -338,7 +338,7 @@ def info(q: str = typer.Argument("")):
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
 
-    driver = create_driver()
+    driver = create_mobile_driver()
     driver.get(url)
 
     # 페이지 로딩을 기다림
