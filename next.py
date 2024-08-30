@@ -104,8 +104,14 @@ def page(url: str):
     return success
 
 
-# @app.command()
-def transport(q: str):
+@app.command(name="tran")
+def transport(q: str = typer.Argument("")):
+    clipboard_use = False
+
+    if not q:
+        q = clipboard.paste()
+        clipboard_use = True
+
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
 
@@ -128,7 +134,11 @@ def transport(q: str):
         place = getPlaceCode(url)
         print(f'place: {place}')
 
-        tranUrl = f'https://m.place.naver.com/place/{place}/location?from=search&filter=transportation'        
+        tranUrl = f'https://m.place.naver.com/place/{place}/location?from=search&filter=transportation'     
+
+        if clipboard_use:
+            print(f'TRANSPORT: {tranUrl} → clipboard.copy')
+            clipboard.copy(tranUrl)   
         # print(f'TRANS: {tranUrl}')
 
     driver.quit()
