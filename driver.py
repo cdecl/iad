@@ -8,9 +8,13 @@ import unittest
 import json
 
 
-def create_common_driver(user_agent: str):
+def create_common_driver(user_agent: str, debugMode: bool = False):
     USER_AGENT = user_agent
     chrome_options = Options()
+
+    if debugMode:
+        chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9222")
+
     chrome_options.add_argument("--headless=new")  # 헤드리스 모드
     chrome_options.add_argument("--disable-gpu")  # GPU 비활성화
     chrome_options.add_argument("--no-sandbox")  # 샌드박스 비활성화
@@ -22,13 +26,13 @@ def create_common_driver(user_agent: str):
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver   
 
-def create_driver():
+def create_driver(debugMode: bool = False):
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36"
-    return create_common_driver(user_agent)
+    return create_common_driver(user_agent, debugMode)
 
-def create_mobile_driver():
+def create_mobile_driver(debugMode: bool = False):
     user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/79.0.3945.88 Mobile/15E148 Safari/604.1"
-    return create_common_driver(user_agent)
+    return create_common_driver(user_agent, debugMode)
 
 
 class TestCase01(unittest.TestCase):
