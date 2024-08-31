@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from driver import create_mobile_driver
+from run import telno as run_telno
 
 import time
 import typer
@@ -131,10 +132,9 @@ def transport(q: str = typer.Argument("")):
     tranUrl = None
 
     if 'http' in url:
-        place = getPlaceCode(url)
-        print(f'place: {place}')
-
-        tranUrl = f'https://m.place.naver.com/place/{place}/location?from=search&filter=transportation'     
+        # place = getPlaceCode(url)
+        # print(f'place: {place}')
+        tranUrl = replaceTransUrl(url)
 
         if clipboard_use:
             print(f'TRANSPORT: {tranUrl} → clipboard.copy')
@@ -147,46 +147,7 @@ def transport(q: str = typer.Argument("")):
 
 @app.command()
 def telno(q: str = typer.Argument("")):
-    clipboard_use = False
-    placeName = None
-
-    if not q:
-        q = clipboard.paste()
-        clipboard_use = True
-
-    url = f'https://m.search.naver.com/search.naver?query={q}'
-    print(url)
-
-    driver = create_mobile_driver()
-    driver.get(url)
-
-    # 페이지 로딩을 기다림
-    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
-
-    try:
-        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F') # , OR conditoin
-        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
-    except:
-        url = "Node with class 'ouxiq' and 'LylZZ' not found."
-
-    print(f'place url: {url}')
-    telnoText = None
-
-    if 'http' in url:
-        driver.get(url)
-        try:
-            tno = driver.find_element(By.CSS_SELECTOR, '.xlx7Q')
-            telnoText = tno.text
-            print(f'TELNO: {telnoText}')
-
-            if clipboard_use:
-                print(f'TELNO: {telnoText} → clipboard.copy')
-                clipboard.copy(telnoText)
-        except:
-            print('NOT FOUND')
-
-    driver.quit()
-    return telnoText
+    return run_telno(q)
 
 
 def getPlaceCode(url: str):
@@ -195,6 +156,10 @@ def getPlaceCode(url: str):
     if match:
         place = match.group(1)
     return place
+
+def replaceTransUrl(url: str):
+    r = re.sub(r'\?.*$', '/location?from=search&filter=transportation', url)
+    return r
 
 
 
