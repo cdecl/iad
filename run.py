@@ -284,6 +284,13 @@ def telno(q: str = typer.Argument("")):
 
 @app.command()
 def home(q: str = typer.Argument("")):
+    home_impl(q)
+
+@app.command()
+def fav(q: str = typer.Argument("")):
+    home_impl(q, True)
+
+def home_impl(q: str, fav: bool = False):
     clipboard_use = False
     placeName = None
 
@@ -315,12 +322,17 @@ def home(q: str = typer.Argument("")):
             homeUrl = driver.current_url
             print(f'HOME: {homeUrl}')
 
-            fav = homeUrl.replace('entry=pll', 'from=search')
-            print(f'FAV: {fav}')
+            favUrl = replaceHomeUrl(homeUrl) # .replace('entry=pll', 'from=search')
+            print(f'FAV: {favUrl}')
+            print()
 
             if clipboard_use:
-                print(f'HOME: {homeUrl} → clipboard.copy')
-                clipboard.copy(homeUrl)
+                if fav:
+                    print(f'FAV: {favUrl} → clipboard.copy')
+                    clipboard.copy(favUrl)
+                else:
+                    print(f'HOME: {homeUrl} → clipboard.copy')
+                    clipboard.copy(homeUrl)
         except:
             print('NOT FOUND')
 
@@ -382,7 +394,9 @@ def getPlaceCode(url: str):
         place = match.group(1)
     return place
 
-
+def replaceHomeUrl(url: str):
+    r = re.sub(r'\?.*$', '?from=search', url)
+    return r
 
 if __name__ == "__main__":
     app()
