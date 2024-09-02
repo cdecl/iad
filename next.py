@@ -158,7 +158,12 @@ def getPlaceCode(url: str):
     return place
 
 def replaceTransUrl(url: str):
-    r = re.sub(r'\?.*$', '/location?from=search&filter=transportation', url)
+    tailUrl = '/location?from=search&filter=transportation'
+    r = None
+    if r'?' in url:
+        r = re.sub(r'\?.*$', tailUrl, url)
+    else:
+        r = f'{url}{tailUrl}'
     return r
 
 
