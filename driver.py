@@ -31,7 +31,7 @@ def create_driver(debugMode: bool = False):
     return create_common_driver(user_agent, debugMode)
 
 def create_mobile_driver(debugMode: bool = False):
-    user_agent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/79.0.3945.88 Mobile/15E148 Safari/604.1"
+    user_agent = r'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36'
     return create_common_driver(user_agent, debugMode)
 
 
