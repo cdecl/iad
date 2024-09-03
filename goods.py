@@ -81,8 +81,8 @@ def page(url: str):
 def parseGoods(s: str):
     nm = store = price = name = None 
 
-    match = re.search(r'2.*\r?\n\r?\n(.*)', s, re.M)
-    if match: nm = match.group(1).strip()
+    # match = re.search(r'2.*\r?\n\r?\n(.*)', s, re.M)
+    # if match: nm = match.group(1).strip()
 
     match = re.search(r'스토어명 : (.*)', s)
     if match: store = match.group(1).strip()
