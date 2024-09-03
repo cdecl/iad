@@ -128,8 +128,13 @@ def transport(q: str = typer.Argument("")):
     except:
         url = "Node with class 'ouxiq' and 'LylZZ' not found."
 
-    print(f'place url: {url}')
+    print(f'place url 1: {url}')
     tranUrl = None
+
+    driver.get(url)
+    time.sleep(PAGE_SLEEP) 
+    url = driver.current_url
+    print(f'place url 2: {url}')
 
     if 'http' in url:
         # place = getPlaceCode(url)
