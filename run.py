@@ -11,6 +11,7 @@ app = typer.Typer()
 
 PAGE_SLEEP = 0.2
 
+
 def extract_consonants(hangul_text: str) -> str:
     if hangul_text is None:
         hangul_text = ""
@@ -30,6 +31,7 @@ def extract_consonants(hangul_text: str) -> str:
             result.append(char)  # 한글이 아닌 경우 그대로 추가
     return ''.join(result)
 
+
 def getPlaceFilter(s: str):
     match = re.search(r'3. \[([^]]+)\].*\[([^]]+)번째\]', s)
     info = None
@@ -37,6 +39,7 @@ def getPlaceFilter(s: str):
         info = match.groups()
         print(info)
     return info
+
 
 def getTransFilter(s: str):
     match = re.search(r'.*(주변정류소).*', s)
@@ -55,6 +58,7 @@ def getParkingFilter(s: str):
         print(info)
     return info
 
+
 def getTelnoFilter(s: str):
     match = re.search(r'.*(번호만 입력).*', s)
     info = None
@@ -71,6 +75,7 @@ def getFilterConsonants(s: str):
         info = match.group(1)
     return info
 
+
 def getFilterCode(s: str):
     ret = None
     code = {
@@ -81,6 +86,7 @@ def getFilterCode(s: str):
     if s in code:
         ret = code[s]
     return ret
+
 
 @app.command()
 def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interval: int = typer.Option(5, "--i/", "-i/", help="interval"), url: str = typer.Argument("")):
@@ -113,6 +119,7 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interv
 
         print("-" * 40)
         print()
+
 
 @app.command()
 def page(url: str):
@@ -153,6 +160,7 @@ def page(url: str):
     driver.quit()
     return success
 
+
 def getQuizInfo(driver):
     copyTxtNode = driver.find_element(By.CSS_SELECTOR, '#copyTxt')
     copyTxt = copyTxtNode.text
@@ -160,6 +168,7 @@ def getQuizInfo(driver):
     quiz_info = driver.find_element(By.CSS_SELECTOR, 'div.quiz-info')
     info_txt = quiz_info.text
     return copyTxt, info_txt
+
 
 def place_action(driver, txt, info_txt, placeInfo):
     order = int(placeInfo[1])
@@ -183,6 +192,7 @@ def place_action(driver, txt, info_txt, placeInfo):
             print(f'{placeName} → save_button.click(failed)')
     return success
 
+
 def tranport_action(driver, copyTxt):
     print(f'copyTxt: {copyTxt}')
     trasportUrl = transport(copyTxt)
@@ -195,6 +205,7 @@ def tranport_action(driver, copyTxt):
     else:
         print(f'{trasportUrl} → save_button.click(failed)')
     return success
+
 
 def parking_action(driver, copyTxt):
     print(f'copyTxt: {copyTxt}')
@@ -209,6 +220,7 @@ def parking_action(driver, copyTxt):
         print(f'{parkingtUrl} → save_button.click(failed)')
     return success
 
+
 def telno_action(driver, txt):
     telnoText = telno(txt)
     telnoText = telnoText.replace('-', '')
@@ -219,18 +231,21 @@ def telno_action(driver, txt):
     print(f'TELNO: {telnoText} → save_button.click(success)')
     return success
 
+
 def save_action(driver, answer):
     searchAnswer = driver.find_element(By.ID, 'searchAnswer')
     searchAnswer.send_keys(answer)
     saveBtn = driver.find_element(By.ID, 'saveBtn')
     saveBtn.click()
 
+
 @app.command()
-def code(idx: int, id: str, filter = typer.Argument("100")):
+def code(idx: int, id: str, filter=typer.Argument("100")):
     driver = create_mobile_driver()
     retCode = code_internal(driver, idx, id, filter)
     driver.quit()
     return retCode
+
 
 def code_internal(driver, idx: int, id: str, filter: str, quisConsonants=typer.Argument("")):
     retCode = None
@@ -266,10 +281,12 @@ def code_internal(driver, idx: int, id: str, filter: str, quisConsonants=typer.A
 
     return retCode
 
+
 # 놀거리 
 @app.command()
 def play(idx: int, filter: str = typer.Argument("30"), q: str = typer.Argument("")):
     return place(idx, filter, q)
+
 
 # 명소 
 @app.command()
@@ -331,13 +348,16 @@ def telno(q: str = typer.Argument("")):
     driver.quit()
     return telnoText
 
+
 @app.command()
 def home(q: str = typer.Argument("")):
     home_impl(q)
 
+
 @app.command()
 def fav(q: str = typer.Argument("")):
     home_impl(q, True)
+
 
 def home_impl(q: str, fav: bool = False):
     clipboard_use = False
@@ -373,6 +393,7 @@ def home_impl(q: str, fav: bool = False):
 
     driver.quit()
 
+
 @app.command()
 def info(q: str = typer.Argument("")):
     if not q:
@@ -400,7 +421,7 @@ def info(q: str = typer.Argument("")):
                 print(extract_consonants(t))
 
             # print(f'infoText: {infoText}')
-        except:
+        except Exception:
             print('NOT FOUND')
 
     driver.quit()

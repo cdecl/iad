@@ -10,6 +10,7 @@ app = typer.Typer()
 
 PAGE_SLEEP = 0.2
 
+
 def search_naver(driver, q):
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
@@ -18,9 +19,9 @@ def search_naver(driver, q):
     time.sleep(PAGE_SLEEP) 
 
     try:
-        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F') # , OR conditoin
+        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F')
         url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
-    except:
+    except Exception:
         url = "Node with class '.ouxiq, .LylZZ, .CHC5F' not found."
     return url
 
@@ -92,13 +93,16 @@ def getPlaceCode(url: str):
         place = match.group(1)
     return place
 
+
 def replaceTransUrl(url: str):
     r = replaceMapUrl(url, "transportation")
     return r
 
+
 def replaceParkingUrl(url: str):
     r = replaceMapUrl(url, "parking")
     return r
+
 
 def replaceMapUrl(url: str, filter: str):
     taillUrl = f'/location?from=search&filter={filter}'
