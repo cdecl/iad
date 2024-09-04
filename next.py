@@ -70,11 +70,10 @@ def replaceTransUrl(url: str):
     tailUrl = '/location?from=search&filter=transportation'
     r = None
     if r'?' in url:
-        r = re.sub(r'\?.*$', tailUrl, url)
+        r = re.sub(r'(\/home\?|\?).*$', tailUrl, url)
     else:
         r = f'{url}{tailUrl}'
     return r
-
 
 
 if __name__ == "__main__":
