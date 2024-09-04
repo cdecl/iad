@@ -1,7 +1,3 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from driver import create_driver, create_mobile_driver
 
@@ -9,23 +5,23 @@ import time
 import typer
 import clipboard
 import re
-import json
 
 app = typer.Typer()
 
 PAGE_SLEEP = 0.2
 
+
 @app.command()
 def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interval: int = typer.Option(5, "--i/", "-i/", help="interval"), url: str = typer.Argument("")):
     if not url:
         print("url is missing !!")
-        return 
+        return
     print(url)
 
     driver = create_mobile_driver()
     driver.get(url)
 
-    time.sleep(PAGE_SLEEP) 
+    time.sleep(PAGE_SLEEP)
     list_items = driver.find_elements(By.CLASS_NAME, 'list-item')
 
     list_cnt = len(list_items)
@@ -39,14 +35,14 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interv
                 try:
                     success = page(href)
                     if success:
-                        time.sleep(interval) 
+                        time.sleep(interval)
                         print(f'interval: {interval}sec')
-                except: 
+                except Exception:
                     pass
         print("-" * 40)
         print()
 
-        
+
 @app.command()
 def page(url: str):
     success = False
@@ -61,9 +57,9 @@ def page(url: str):
     q_txt = qinfo.text
     print(q_txt)
 
-    ## RUN 
+    # RUN
     pdcode = run(q_txt)
-    
+
     if pdcode:
         quizAnswer = driver.find_element(By.ID, 'quizAnswer')
         quizAnswer.send_keys(pdcode)
@@ -79,19 +75,22 @@ def page(url: str):
 
 
 def parseGoods(s: str):
-    nm = store = price = name = None 
+    nm = store = price = name = None
 
     # match = re.search(r'2.*\r?\n\r?\n(.*)', s, re.M)
     # if match: nm = match.group(1).strip()
 
     match = re.search(r'스토어명 : (.*)', s)
-    if match: store = match.group(1).strip()
+    if match:
+        store = match.group(1).strip()
 
     match = re.search(r'가격 : (.*)', s)
-    if match: price = match.group(1).strip()
+    if match:
+        price = match.group(1).strip()
 
     match = re.search(r'상품명 : (.*)', s)
-    if match: name = match.group(1).strip()
+    if match:
+        name = match.group(1).strip()
 
     return [nm, store, price, name]
 
@@ -111,14 +110,16 @@ def run(q: str = typer.Argument("")):
         print("QUIZ 형식이 맞지 않습니다.")
         return None
 
-    if not gd[0]: gd[0] = gd[3]
-    if not gd[2]: gd[2] = "0"
+    if not gd[0]:
+        gd[0] = gd[3]
+    if not gd[2]:
+        gd[2] = "0"
     print(gd)
 
     q = gd[0]
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
-    
+
     driver = create_driver()
     driver.get(url)
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
@@ -140,33 +141,33 @@ def run(q: str = typer.Argument("")):
                 "url": url
             }
             results.append(result)
-        except:
+        except Exception:
             continue
 
     price_match = False
     pdcode = None
 
     for item in results:
-        if (item["store"] == gd[1] and 
-            item["price"].replace(',', '') == gd[2].replace(',', '') and 
-            item["name"].strip() == gd[3].strip()):
+        if (item["store"] == gd[1] and item["price"].replace(',', '') == gd[2].replace(',', '') and item["name"].strip() == gd[3].strip()):
             print(item)
             pdcode = getUrlCode(item["url"], driver)
-            if clipboard_use: clipboard.copy(pdcode)
+            if clipboard_use:
+                clipboard.copy(pdcode)
             price_match = True
             exit
- 
+
     if not price_match:
         for item in results:
-            if (item["store"] == gd[1] and 
-                item["name"].strip() == gd[3].strip()):
+            if (item["store"] == gd[1] and item["name"].strip() == gd[3].strip()):
                 print(item)
                 pdcode = getUrlCode(item["url"], driver)
-                if clipboard_use: clipboard.copy(pdcode)
+                if clipboard_use:
+                    clipboard.copy(pdcode)
                 exit
 
     driver.quit()
     return pdcode
+
 
 def getUrlCode(url: str, driver):
     # driver = create_driver()
@@ -189,7 +190,6 @@ def getProductCode(url: str):
     if match:
         extracted_value = match.group(1)
     return extracted_value
-
 
 
 if __name__ == "__main__":

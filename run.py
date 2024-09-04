@@ -92,13 +92,13 @@ def getFilterCode(s: str):
 def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interval: int = typer.Option(5, "--i/", "-i/", help="interval"), url: str = typer.Argument("")):
     if not url:
         print("url is missing !!")
-        return 
+        return
     print(url)
 
     driver = create_mobile_driver()
     driver.get(url)
 
-    time.sleep(PAGE_SLEEP) 
+    time.sleep(PAGE_SLEEP)
     list_items = driver.find_elements(By.CLASS_NAME, 'list-item')
 
     list_cnt = len(list_items)
@@ -112,10 +112,10 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interv
                 try:
                     success = page(href)
                     if success:
-                        time.sleep(interval) 
+                        time.sleep(interval)
                         print(f'interval: {interval}sec')
                 except Exception:
-                    print('EXCEPT: PAGE EXCUTE') 
+                    print('EXCEPT: PAGE EXCUTE')
 
         print("-" * 40)
         print()
@@ -135,22 +135,22 @@ def page(url: str):
     print(f'info: {info_txt}')
 
     info = getPlaceFilter(info_txt)
-    if info:   
+    if info:
         print(">> PLACE_ACTION")
         success = place_action(driver, copyTxt, info_txt, info)
     else:
         info = getTransFilter(info_txt)
-        if info:  
+        if info:
             print(">> TRANPORT_ACTION")
             success = tranport_action(driver, copyTxt)
         else:
             info = getParkingFilter(info_txt)
-            if info: 
+            if info:
                 print(">> PARKING_ACTION")
                 success = parking_action(driver, copyTxt)
             else:
                 info = getTelnoFilter(info_txt)
-                if info: 
+                if info:
                     print(">> TELNO_ACTION")
                     success = telno_action(driver, copyTxt)
                 else:
@@ -196,7 +196,7 @@ def place_action(driver, txt, info_txt, placeInfo):
 def tranport_action(driver, copyTxt):
     print(f'copyTxt: {copyTxt}')
     trasportUrl = transport(copyTxt)
-    print(f'trasportUrl: {trasportUrl}')    
+    print(f'trasportUrl: {trasportUrl}')
 
     if trasportUrl:
         save_action(driver, trasportUrl)
@@ -270,7 +270,7 @@ def code_internal(driver, idx: int, id: str, filter: str, quisConsonants=typer.A
             if quisConsonants == extract:
                 print(f'자음매치: {r}')
                 retCode = r
-        
+
     if not retCode:
         for i, r in enumerate(results, start=1):
             if i == (idx - 1):
@@ -282,13 +282,13 @@ def code_internal(driver, idx: int, id: str, filter: str, quisConsonants=typer.A
     return retCode
 
 
-# 놀거리 
+# 놀거리
 @app.command()
 def play(idx: int, filter: str = typer.Argument("30"), q: str = typer.Argument("")):
     return place(idx, filter, q)
 
 
-# 명소 
+# 명소
 @app.command()
 def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument(""), quistext: str = typer.Argument("")):
     clipboard_use = False
@@ -310,7 +310,7 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
 
         if place:
             placeName = code_internal(driver, idx, place, filter, quistext)
-            if clipboard_use: 
+            if clipboard_use:
                 print(f'placeName: {placeName} → clipboard.copy')
                 clipboard.copy(placeName)
 
@@ -342,7 +342,7 @@ def telno(q: str = typer.Argument("")):
             if clipboard_use:
                 print(f'TELNO: {telnoText} → clipboard.copy')
                 clipboard.copy(telnoText)
-        except:
+        except Exception:
             print('NOT FOUND')
 
     driver.quit()
@@ -388,7 +388,7 @@ def home_impl(q: str, fav: bool = False):
                 else:
                     print(f'HOME: {homeUrl} → clipboard.copy')
                     clipboard.copy(homeUrl)
-        except:
+        except Exception:
             print('NOT FOUND')
 
     driver.quit()
@@ -433,6 +433,7 @@ def getPlaceCode(url: str):
     if match:
         place = match.group(1)
     return place
+
 
 def replaceHomeUrl(url: str):
     r = re.sub(r'\?.*$', '?from=search', url)

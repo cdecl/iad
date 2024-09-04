@@ -16,7 +16,7 @@ def search_naver(driver, q):
     print(url)
 
     driver.get(url)
-    time.sleep(PAGE_SLEEP) 
+    time.sleep(PAGE_SLEEP)
 
     try:
         node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F')
@@ -41,7 +41,7 @@ def transport(q: str = typer.Argument("")):
     tranUrl = None
 
     driver.get(url)
-    time.sleep(PAGE_SLEEP) 
+    time.sleep(PAGE_SLEEP)
     url = driver.current_url
     print(f'place url 2: {url}')
 
@@ -50,7 +50,7 @@ def transport(q: str = typer.Argument("")):
 
         if clipboard_use:
             print(f'TRANSPORT: {tranUrl} → clipboard.copy')
-            clipboard.copy(tranUrl)   
+            clipboard.copy(tranUrl)
 
     driver.quit()
     return tranUrl
@@ -71,7 +71,7 @@ def parking(q: str = typer.Argument("")):
     tranUrl = None
 
     driver.get(url)
-    time.sleep(PAGE_SLEEP) 
+    time.sleep(PAGE_SLEEP)
     url = driver.current_url
     print(f'place url 2: {url}')
 
@@ -80,7 +80,7 @@ def parking(q: str = typer.Argument("")):
 
         if clipboard_use:
             print(f'PARKING: {tranUrl} → clipboard.copy')
-            clipboard.copy(tranUrl)   
+            clipboard.copy(tranUrl)
 
     driver.quit()
     return tranUrl
