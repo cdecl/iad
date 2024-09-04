@@ -1,7 +1,3 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from driver import create_mobile_driver
 
@@ -39,7 +35,7 @@ def transport(q: str = typer.Argument("")):
 
     driver = create_mobile_driver()
     url = search_naver(driver, q)
-    
+
     print(f'place url 1: {url}')
     tranUrl = None
 

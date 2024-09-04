@@ -1,7 +1,3 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 
 from driver import create_mobile_driver
@@ -112,8 +108,9 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interv
                     if success:
                         time.sleep(interval) 
                         print(f'interval: {interval}sec')
-                except: 
-                    pass
+                except Exception:
+                    print('EXCEPT: PAGE EXCUTE') 
+
         print("-" * 40)
         print()
 
@@ -235,7 +232,7 @@ def code(idx: int, id: str, filter = typer.Argument("100")):
     driver.quit()
     return retCode
 
-def code_internal(driver, idx: int, id: str, filter: str, quisConsonants = typer.Argument("")):
+def code_internal(driver, idx: int, id: str, filter: str, quisConsonants=typer.Argument("")):
     retCode = None
     url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter={filter}'
     print(url)
@@ -274,7 +271,7 @@ def code_internal(driver, idx: int, id: str, filter: str, quisConsonants = typer
 def play(idx: int, filter: str = typer.Argument("30"), q: str = typer.Argument("")):
     return place(idx, filter, q)
 
-#명소 
+# 명소 
 @app.command()
 def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument(""), quistext: str = typer.Argument("")):
     clipboard_use = False
@@ -293,7 +290,7 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
     if 'http' in url:
         place = getPlaceCode(url)
         print(f'place: {place}')
-    
+
         if place:
             placeName = code_internal(driver, idx, place, filter, quistext)
             if clipboard_use: 
@@ -307,7 +304,6 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
 @app.command()
 def telno(q: str = typer.Argument("")):
     clipboard_use = False
-    placeName = None
 
     if not q:
         q = clipboard.paste()
@@ -345,7 +341,6 @@ def fav(q: str = typer.Argument("")):
 
 def home_impl(q: str, fav: bool = False):
     clipboard_use = False
-    placeName = None
 
     if not q:
         q = clipboard.paste()
@@ -359,11 +354,10 @@ def home_impl(q: str, fav: bool = False):
     if 'http' in url:
         driver.get(url)
         try:
-            tno = driver.find_element(By.CSS_SELECTOR, '.xlx7Q')
             homeUrl = driver.current_url
             print(f'HOME: {homeUrl}')
 
-            favUrl = replaceHomeUrl(homeUrl) # .replace('entry=pll', 'from=search')
+            favUrl = replaceHomeUrl(homeUrl)
             print(f'FAV: {favUrl}')
             print()
 
@@ -381,12 +375,8 @@ def home_impl(q: str, fav: bool = False):
 
 @app.command()
 def info(q: str = typer.Argument("")):
-    clipboard_use = False
-    placeName = None
-
     if not q:
         q = clipboard.paste()
-        clipboard_use = True
 
     driver = create_mobile_driver()
     url = search_naver(driver, q)
@@ -426,6 +416,7 @@ def getPlaceCode(url: str):
 def replaceHomeUrl(url: str):
     r = re.sub(r'\?.*$', '?from=search', url)
     return r
+
 
 if __name__ == "__main__":
     app()
