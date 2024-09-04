@@ -5,7 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 
 from driver import create_mobile_driver
-from next import transport
+from next import transport, parking, search_naver
 import time
 import typer
 import clipboard
@@ -44,6 +44,15 @@ def getPlaceFilter(s: str):
 
 def getTransFilter(s: str):
     match = re.search(r'.*(주변정류소).*', s)
+    info = None
+    if match:
+        info = match.groups()
+        print(info)
+    return info
+
+
+def getParkingFilter(s: str):
+    match = re.search(r'.*(주차장).*', s)
     info = None
     if match:
         info = match.groups()
@@ -129,15 +138,20 @@ def page(url: str):
         info = getTransFilter(info_txt)
         if info:  
             print(">> TRANPORT_ACTION")
-            success = tranport_action(driver, copyTxt, info_txt)
+            success = tranport_action(driver, copyTxt)
         else:
-            info = getTelnoFilter(info_txt)
+            info = getParkingFilter(info_txt)
             if info: 
-                print(">> TELNO_ACTION")
-                success = telno_action(driver, copyTxt)
+                print(">> PARKING_ACTION")
+                success = parking_action(driver, copyTxt)
             else:
-                print('해당 쿼즈 필터가 없습니다.')
-                success = False
+                info = getTelnoFilter(info_txt)
+                if info: 
+                    print(">> TELNO_ACTION")
+                    success = telno_action(driver, copyTxt)
+                else:
+                    print('해당 쿼즈 필터가 없습니다.')
+                    success = False
 
     driver.quit()
     return success
@@ -170,14 +184,12 @@ def place_action(driver, txt, info_txt, placeInfo):
             print(f'{placeName} → save_button.click(success)')
         else:
             print(f'{placeName} → save_button.click(failed)')
-
     return success
 
-
-def tranport_action(driver, copyTxt, info_txt):
+def tranport_action(driver, copyTxt):
     print(f'copyTxt: {copyTxt}')
     trasportUrl = transport(copyTxt)
-    print(f'trasportUrl: {trasportUrl}')
+    print(f'trasportUrl: {trasportUrl}')    
 
     if trasportUrl:
         save_action(driver, trasportUrl)
@@ -185,7 +197,19 @@ def tranport_action(driver, copyTxt, info_txt):
         print(f'{trasportUrl} → save_button.click(success)')
     else:
         print(f'{trasportUrl} → save_button.click(failed)')
+    return success
 
+def parking_action(driver, copyTxt):
+    print(f'copyTxt: {copyTxt}')
+    parkingtUrl = parking(copyTxt)
+    print(f'parkingtUrl: {parkingtUrl}')
+
+    if parkingtUrl:
+        save_action(driver, parkingtUrl)
+        success = True
+        print(f'{parkingtUrl} → save_button.click(success)')
+    else:
+        print(f'{parkingtUrl} → save_button.click(failed)')
     return success
 
 def telno_action(driver, txt):
@@ -260,20 +284,8 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
         q = clipboard.paste()
         clipboard_use = True
 
-    url = f'https://m.search.naver.com/search.naver?query={q}'
-    print(url)
-
     driver = create_mobile_driver()
-    driver.get(url)
-
-    # 페이지 로딩을 기다림
-    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
-
-    try:
-        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F') # , OR conditoin
-        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
-    except:
-        url = "Node with class 'ouxiq' and 'LylZZ' not found."
+    url = search_naver(driver, q)
 
     print(f'place url: {url}')
 
@@ -301,20 +313,8 @@ def telno(q: str = typer.Argument("")):
         q = clipboard.paste()
         clipboard_use = True
 
-    url = f'https://m.search.naver.com/search.naver?query={q}'
-    print(url)
-
     driver = create_mobile_driver()
-    driver.get(url)
-
-    # 페이지 로딩을 기다림
-    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
-
-    try:
-        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F') # , OR conditoin
-        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
-    except:
-        url = "Node with class 'ouxiq' and 'LylZZ' not found."
+    url = search_naver(driver, q)
 
     print(f'place url: {url}')
     telnoText = None
@@ -335,7 +335,6 @@ def telno(q: str = typer.Argument("")):
     driver.quit()
     return telnoText
 
-
 @app.command()
 def home(q: str = typer.Argument("")):
     home_impl(q)
@@ -352,20 +351,8 @@ def home_impl(q: str, fav: bool = False):
         q = clipboard.paste()
         clipboard_use = True
 
-    url = f'https://m.search.naver.com/search.naver?query={q}'
-    print(url)
-
     driver = create_mobile_driver()
-    driver.get(url)
-
-    # 페이지 로딩을 기다림
-    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
-
-    try:
-        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F') # , OR conditoin
-        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
-    except:
-        url = "Node with class 'ouxiq' and 'LylZZ' not found."
+    url = search_naver(driver, q)
 
     print(f'place url: {url}')
 
@@ -401,20 +388,8 @@ def info(q: str = typer.Argument("")):
         q = clipboard.paste()
         clipboard_use = True
 
-    url = f'https://m.search.naver.com/search.naver?query={q}'
-    print(url)
-
     driver = create_mobile_driver()
-    driver.get(url)
-
-    # 페이지 로딩을 기다림
-    time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
-
-    try:
-        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F') # , OR conditoin
-        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
-    except:
-        url = "Node with class 'ouxiq' and 'LylZZ' not found."
+    url = search_naver(driver, q)
 
     print(f'place url: {url}')
 
