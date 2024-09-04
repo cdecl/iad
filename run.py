@@ -3,8 +3,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-from driver import create_mobile_driver
 
+from driver import create_mobile_driver
+from next import transport
 import time
 import typer
 import clipboard
@@ -31,12 +32,26 @@ def extract_consonants(hangul_text: str) -> str:
             result.append(CHOSUNG_LIST[chosung_index])
         else:
             result.append(char)  # 한글이 아닌 경우 그대로 추가
-
     return ''.join(result)
 
-
-def getFilter(s: str):
+def getPlaceFilter(s: str):
     match = re.search(r'3. \[([^]]+)\].*\[([^]]+)번째\]', s)
+    info = None
+    if match:
+        info = match.groups()
+        print(info)
+    return info
+
+def getTransFilter(s: str):
+    match = re.search(r'.*(주변정류소).*', s)
+    info = None
+    if match:
+        info = match.groups()
+        print(info)
+    return info
+
+def getTelnoFilter(s: str):
+    match = re.search(r'.*(번호만 입력).*', s)
     info = None
     if match:
         info = match.groups()
@@ -103,52 +118,91 @@ def page(url: str):
 
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
-    copyTxt = driver.find_element(By.CSS_SELECTOR, '#copyTxt')
-    txt = copyTxt.text
-
-    quiz_info = driver.find_element(By.CSS_SELECTOR, 'div.quiz-info')
-    info_txt = quiz_info.text
+    copyTxt, info_txt = getQuizInfo(driver)
     print(f'info: {info_txt}')
 
-    info = getFilter(info_txt)
-
-    if info:        
-        order = int(info[1])
-        filterCode = getFilterCode(info[0])
-        quisConsonants = getFilterConsonants(info_txt)
-
-        print(f'copyTxt: {txt}')
-        print(f'filterCode: {filterCode}, order: {order}')
-
-        placeName = None
-        if filterCode:
-            placeName = place(order, filterCode, txt, quisConsonants)
-            placeNameConsonants = extract_consonants(placeName)
-            print(f'추출자음: {placeNameConsonants} / 예시자음: {quisConsonants}')
-
-            if placeName and placeNameConsonants == quisConsonants:
-                searchAnswer = driver.find_element(By.ID, 'searchAnswer')
-                searchAnswer.send_keys(placeName)
-                saveBtn = driver.find_element(By.ID, 'saveBtn')
-                saveBtn.click()
-                success = True
-                print(f'{placeName} → save_button.click(success)')
-            else:
-                print(f'{placeName} → save_button.click(failed)')
+    info = getPlaceFilter(info_txt)
+    if info:   
+        print(">> PLACE_ACTION")
+        success = place_action(driver, copyTxt, info_txt, info)
     else:
-        print("TELNO MODE")
-        telnoText = telno(txt)
-        telnoText = telnoText.replace('-', '')
-
-        searchAnswer = driver.find_element(By.ID, 'searchAnswer')
-        searchAnswer.send_keys(telnoText)
-        saveBtn = driver.find_element(By.ID, 'saveBtn')
-        saveBtn.click()
-        success = True
-        print(f'TELNO: {telnoText} → save_button.click(success)')
+        info = getTransFilter(info_txt)
+        if info:  
+            print(">> TRANPORT_ACTION")
+            success = tranport_action(driver, copyTxt, info_txt)
+        else:
+            info = getTelnoFilter(info_txt)
+            if info: 
+                print(">> TELNO_ACTION")
+                success = telno_action(driver, copyTxt)
+            else:
+                print('해당 쿼즈 필터가 없습니다.')
+                success = False
 
     driver.quit()
     return success
+
+def getQuizInfo(driver):
+    copyTxtNode = driver.find_element(By.CSS_SELECTOR, '#copyTxt')
+    copyTxt = copyTxtNode.text
+
+    quiz_info = driver.find_element(By.CSS_SELECTOR, 'div.quiz-info')
+    info_txt = quiz_info.text
+    return copyTxt, info_txt
+
+def place_action(driver, txt, info_txt, placeInfo):
+    order = int(placeInfo[1])
+    filterCode = getFilterCode(placeInfo[0])
+    quisConsonants = getFilterConsonants(info_txt)
+
+    print(f'copyTxt: {txt}')
+    print(f'filterCode: {filterCode}, order: {order}')
+
+    placeName = None
+    if filterCode:
+        placeName = place(order, filterCode, txt, quisConsonants)
+        placeNameConsonants = extract_consonants(placeName)
+        print(f'추출자음: {placeNameConsonants} / 예시자음: {quisConsonants}')
+
+        if placeName and placeNameConsonants == quisConsonants:
+            save_action(driver, placeName)
+            success = True
+            print(f'{placeName} → save_button.click(success)')
+        else:
+            print(f'{placeName} → save_button.click(failed)')
+
+    return success
+
+
+def tranport_action(driver, copyTxt, info_txt):
+    print(f'copyTxt: {copyTxt}')
+    trasportUrl = transport(copyTxt)
+    print(f'trasportUrl: {trasportUrl}')
+
+    if trasportUrl:
+        save_action(trasportUrl)
+        success = True
+        print(f'{trasportUrl} → save_button.click(success)')
+    else:
+        print(f'{trasportUrl} → save_button.click(failed)')
+
+    return success
+
+def telno_action(driver, txt):
+    telnoText = telno(txt)
+    telnoText = telnoText.replace('-', '')
+
+    save_action(driver, telnoText)
+    success = True
+
+    print(f'TELNO: {telnoText} → save_button.click(success)')
+    return success
+
+def save_action(driver, answer):
+    searchAnswer = driver.find_element(By.ID, 'searchAnswer')
+    searchAnswer.send_keys(answer)
+    saveBtn = driver.find_element(By.ID, 'saveBtn')
+    saveBtn.click()
 
 @app.command()
 def code(idx: int, id: str, filter = typer.Argument("100")):
