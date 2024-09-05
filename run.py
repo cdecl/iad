@@ -34,26 +34,30 @@ def extract_consonants(hangul_text: str) -> str:
 
 def toOrder(s: str):
     order = None
-    if s == "1" or s == "첫":
-        order = 1
-    elif s == "2" or s == "두":
-        order = 2
-    elif s == "3" or s == "세":
-        order = 3
-    elif s == "4" or s == "네":
-        order = 4
-    elif s == "5" or s == "다섯":
-        order = 5
-    elif s == "6" or s == "여섯":
-        order = 6
+
+    if s.isnumeric():
+        order = int(s)
     else:
-        order = 1
+        if s == "첫":
+            order = 1
+        elif s == "두":
+            order = 2
+        elif s == "세":
+            order = 3
+        elif s == "네":
+            order = 4
+        elif s == "다섯":
+            order = 5
+        elif s == "여섯":
+            order = 6
+        else:
+            order = 1
     return order
 
 
 def getPlaceFilter(s: str):
     # match = re.search(r'3. \[([^]]+)\].*\[([^]]+)번째\]', s)
-    match = re.search(r'(명소).* (.+)번째', s)
+    match = re.search(r'(명소).* \[?(.+)번째', s)
     info = None
     if match:
         info = match.groups()
