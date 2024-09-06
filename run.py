@@ -378,16 +378,16 @@ def telno(q: str = typer.Argument("")):
 
 @app.command()
 def home(q: str = typer.Argument("")):
-    home_impl(q)
-
+    return home_impl(q)
 
 @app.command()
 def fav(q: str = typer.Argument("")):
-    home_impl(q, True)
+    return home_impl(q, True)
 
 
 def home_impl(q: str, fav: bool = False):
     clipboard_use = False
+    result = None
 
     if not q:
         q = clipboard.paste()
@@ -401,24 +401,26 @@ def home_impl(q: str, fav: bool = False):
     if 'http' in url:
         driver.get(url)
         try:
-            homeUrl = driver.current_url
-            print(f'HOME: {homeUrl}')
-
-            favUrl = replaceHomeUrl(homeUrl)
-            print(f'FAV: {favUrl}')
-            print()
+            current_url = driver.current_url
+            if fav:
+                result = replaceHomeUrl(current_url)
+                print(f'FAV: {result}')
+            else:
+                result = current_url
+                print(f'HOME: {result}')
 
             if clipboard_use:
                 if fav:
-                    print(f'FAV: {favUrl} → clipboard.copy')
-                    clipboard.copy(favUrl)
+                    print(f'FAV: {result} → clipboard.copy')
+                    clipboard.copy(result)
                 else:
-                    print(f'HOME: {homeUrl} → clipboard.copy')
-                    clipboard.copy(homeUrl)
+                    print(f'HOME: {result} → clipboard.copy')
+                    clipboard.copy(result)
         except Exception:
             print('NOT FOUND')
 
     driver.quit()
+    return result
 
 
 @app.command()
