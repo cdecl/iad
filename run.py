@@ -455,7 +455,7 @@ def info(q: str = typer.Argument("")):
 
 
 def getPlaceCode(url: str):
-    match = re.search(r'/(?:place|restaurant|hairshop)/(\d+)', url)
+    match = re.search(r'/(?:place|restaurant|hairshop|hospital)/(\d+)', url)
     place = None
     if match:
         place = match.group(1)

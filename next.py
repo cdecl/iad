@@ -19,7 +19,7 @@ def search_naver(driver, q):
     time.sleep(PAGE_SLEEP)
 
     try:
-        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F')
+        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F, .IPtqD')
         url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
     except Exception:
         url = "Node with class '.ouxiq, .LylZZ, .CHC5F' not found."
