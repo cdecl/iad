@@ -1,7 +1,7 @@
 from selenium.webdriver.common.by import By
 
 from driver import create_mobile_driver
-from next import transport, parking, search_naver
+from run_ex import transport, parking, search_naver, replaceHomeUrl
 import time
 import typer
 import clipboard
@@ -57,7 +57,7 @@ def toOrder(s: str):
 
 def getPlaceFilter(s: str):
     # match = re.search(r'3. \[([^]]+)\].*\[([^]]+)번째\]', s)
-    match = re.search(r'(명소).* \[?(.+)번째', s)
+    match = re.search(r'(명소|놀거리).* \[?(.+)번째', s)
     info = None
     if match:
         info = match.groups()
@@ -204,7 +204,7 @@ def place_action(driver, txt, info_txt, placeInfo):
 
     success = False
     placeName = None
-    
+
     if filterCode:
         placeName = place(order, filterCode, txt, quisConsonants)
         placeNameConsonants = extract_consonants(placeName)
@@ -460,11 +460,6 @@ def getPlaceCode(url: str):
     if match:
         place = match.group(1)
     return place
-
-
-def replaceHomeUrl(url: str):
-    r = re.sub(r'\?.*$', '?from=search', url)
-    return r
 
 
 if __name__ == "__main__":
