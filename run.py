@@ -425,7 +425,8 @@ def home_impl(q: str, fav: bool = False):
 
 
 @app.command()
-def info(q: str = typer.Argument("")):
+def info(q: str = typer.Argument(""), cons: str = typer.Argument("")):
+    result = None
     if not q:
         q = clipboard.paste()
 
@@ -446,15 +447,20 @@ def info(q: str = typer.Argument("")):
             infoText = ninfo.text
 
             infoTexts = infoText.split('\n')
-            for t in infoTexts:
-                print(t)
-                print(extract_consonants(t))
+            for text in infoTexts:
+                extract_cons = extract_consonants(text)
+                idx = extract_cons.find(cons)
+                if idx >= 0:
+                    print(text)
+                    result = text[idx:len(cons) + idx]
+                    # print(f'{idx} {len(extract_cons)}')
+                    print(result)
 
-            # print(f'infoText: {infoText}')
         except Exception:
-            print('NOT FOUND')
+            result = 'NOT FOUND'
 
     driver.quit()
+    return result
 
 
 def getPlaceCode(url: str):

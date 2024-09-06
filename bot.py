@@ -3,7 +3,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
 import os
-from run import place, home, fav, telno
+from run import place, home, fav, telno, info
 from dotenv import load_dotenv
 
 # 로깅 설정
@@ -84,6 +84,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     if query.data == 'place':
         result = "ex) 1 장소명"
+
         args = user_input.split(' ')
         if len(args) >= 2:
             order_in = args[0]
@@ -91,10 +92,20 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
                 order = int(args[0])
                 q = ' '.join(args[1:])
                 result = place(order, "100", q)
+
     elif query.data == 'home':
         result = home(user_input)
+
     elif query.data == 'fav':
         result = fav(user_input)
+
+    elif query.data == 'info':
+        result = "ex) 장소명 초성"
+        args = user_input.split(' ')
+        q = ' '.join(args[:-1])
+        cons = args[-1]
+        result = info(q, cons)
+
     elif query.data == 'telno':
         result = telno(user_input)
 
@@ -110,9 +121,10 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     user_inputs[user_id] = user_input
 
     keyboard = [
-        [InlineKeyboardButton("N번째-명소", callback_data='place')],
-        [InlineKeyboardButton("홈URL", callback_data='home')],
-        [InlineKeyboardButton("홈URL-저장", callback_data='fav')],
+        [InlineKeyboardButton("N번째-명소 9", callback_data='place')],
+        [InlineKeyboardButton("홈URL 10", callback_data='home')],
+        [InlineKeyboardButton("홈URL-저장 15", callback_data='fav')],
+        [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
         [InlineKeyboardButton("전화번호", callback_data='telno')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
