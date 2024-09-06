@@ -380,6 +380,7 @@ def telno(q: str = typer.Argument("")):
 def home(q: str = typer.Argument("")):
     return home_impl(q)
 
+
 @app.command()
 def fav(q: str = typer.Argument("")):
     return home_impl(q, True)
