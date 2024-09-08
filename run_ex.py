@@ -19,8 +19,11 @@ def search_naver(driver, q):
     time.sleep(PAGE_SLEEP)
 
     try:
-        node = driver.find_element(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F, .IPtqD')
-        url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+        nodes = driver.find_elements(By.CSS_SELECTOR, '.ouxiq, .LylZZ, .CHC5F, .IPtqD')
+        for node in nodes:
+            url = node.find_element(By.CSS_SELECTOR, 'a').get_attribute('href')
+            if 'tivan.naver.com' not in url:
+                break
     except Exception:
         url = "Node with class '.ouxiq, .LylZZ, .CHC5F' not found."
     return url
