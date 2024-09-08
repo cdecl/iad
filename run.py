@@ -426,7 +426,7 @@ def home_impl(q: str, fav: bool = False):
 
 @app.command()
 def info(q: str = typer.Argument(""), cons: str = typer.Argument("")):
-    result = None
+    result = ''
     if not q:
         q = clipboard.paste()
 
@@ -450,12 +450,14 @@ def info(q: str = typer.Argument(""), cons: str = typer.Argument("")):
             for text in infoTexts:
                 extract_cons = extract_consonants(text)
                 idx = extract_cons.find(cons)
-                if idx >= 0:
+                if idx >= 0 and text:
                     print(text)
-                    result = text[idx:len(cons) + idx]
-                    # print(f'{idx} {len(extract_cons)}')
-                    print(result)
+                    print(extract_cons)
+                    r = text[idx:len(cons) + idx]
 
+                    if r not in result:
+                        result = f'{result}\n{r}'
+                        print(result)
         except Exception:
             result = 'NOT FOUND'
 
