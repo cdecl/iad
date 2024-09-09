@@ -1,7 +1,7 @@
 from selenium.webdriver.common.by import By
 
 from driver import create_mobile_driver
-from run_ex import transport, parking, search_naver, replaceHomeUrl
+from run_ex import transport, parking, search_naver, replaceHomeSaveUrl
 import time
 import typer
 import clipboard
@@ -66,7 +66,8 @@ def getPlaceFilter(s: str):
 
 
 def getTransFilter(s: str):
-    match = re.search(r'.*(주변정류소).*', s)
+    # match = re.search(r'.*(주변정류소).*', s)
+    match = re.search(r'.*(저장하기)(?:.|\n)*(주변정류소).*', s)
     info = None
     if match:
         info = match.groups()
@@ -404,7 +405,7 @@ def home_impl(q: str, fav: bool = False):
         try:
             current_url = driver.current_url
             if fav:
-                result = replaceHomeUrl(current_url)
+                result = replaceHomeSaveUrl(current_url)
                 print(f'FAV: {result}')
             else:
                 result = current_url

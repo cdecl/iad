@@ -97,7 +97,7 @@ def getPlaceCode(url: str):
     return place
 
 
-def replaceHomeUrl(url: str):
+def replaceHomeSaveUrl(url: str):
     r = re.sub(r'\?.*$', '?from=search', url)
     return r
 
@@ -113,7 +113,8 @@ def replaceParkingUrl(url: str):
 
 
 def replaceMapUrl(url: str, filter: str):
-    taillUrl = f'/location?entry=pll&filter={filter}'
+    # taillUrl = f'/location?entry=pll&filter={filter}'
+    taillUrl = f'/location?from=search&filter={filter}'
     r = None
     if r'?' in url:
         r = re.sub(r'(\/home\?|\?).*$', taillUrl, url)
