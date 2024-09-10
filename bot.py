@@ -4,6 +4,7 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Messa
 
 import os
 from run import place, home, fav, telno, info
+from run_ex import goods
 from dotenv import load_dotenv
 
 # 로깅 설정
@@ -109,6 +110,9 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     elif query.data == 'telno':
         result = telno(user_input)
 
+    elif query.data == 'goods':
+        result = goods(str(user_input).split(' '))
+
     await query.edit_message_text(f"{result}")
 
 
@@ -125,7 +129,8 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         [InlineKeyboardButton("홈URL 10", callback_data='home')],
         [InlineKeyboardButton("홈URL-저장 15", callback_data='fav')],
         [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
-        [InlineKeyboardButton("전화번호", callback_data='telno')]
+        [InlineKeyboardButton("전화번호", callback_data='telno')],
+        [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
