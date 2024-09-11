@@ -129,8 +129,8 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         [InlineKeyboardButton("홈URL 10", callback_data='home')],
         [InlineKeyboardButton("홈URL-저장 15", callback_data='fav')],
         [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
-        [InlineKeyboardButton("전화번호", callback_data='telno')],
-        [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
+        [InlineKeyboardButton("전화번호", callback_data='telno')]
+        # [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
