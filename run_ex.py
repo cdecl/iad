@@ -154,6 +154,9 @@ def getPlaceCode(url: str):
 
 
 def replaceHomeSaveUrl(url: str):
+    if '?' not in url:
+        url += '?'
+
     r = re.sub(r'\?.*$', '?from=search', url)
     return r
 
