@@ -74,6 +74,19 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 #####
+def isconsonants(text: str) -> bool:
+    if not text:
+        return False
+
+    CHOSUNG_LIST = [
+        'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+    ]
+
+    for char in text:
+        if char not in CHOSUNG_LIST:
+            return False
+    return True
+
 
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """버튼 선택을 처리합니다."""
@@ -84,15 +97,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     user_input = user_inputs.get(user_id, "")
 
     if query.data == 'place':
-        result = "ex) 1 장소명"
-
-        args = user_input.split(' ')
-        if len(args) >= 2:
-            order_in = args[0]
-            if order_in.isnumeric:
-                order = int(args[0])
-                q = ' '.join(args[1:])
-                result = place(order, "100", q)
+        place_impl(user_input)
 
     elif query.data == 'home':
         result = home(user_input)
@@ -102,9 +107,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     elif query.data == 'info':
         result = "ex) 장소명 초성"
-        args = user_input.split(' ')
-        q = ' '.join(args[:-1])
-        cons = args[-1]
+        q, cons = parse_consonants_q(user_input)
         result = info(q, cons)
 
     elif query.data == 'telno':
@@ -116,6 +119,26 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await query.edit_message_text(f"{result}")
 
 
+def parse_consonants_q(user_input):
+    args = user_input.split(' ')
+    q = ' '.join(args[:-1])
+    cons = args[-1]
+    return (q, cons)
+
+
+def place_impl(user_input):
+    result = "ex) 1 장소명"
+
+    args = user_input.split(' ')
+    if len(args) >= 2:
+        order_in = args[0]
+        if order_in.isnumeric:
+            order = int(args[0])
+            q = ' '.join(args[1:])
+            result = place(order, "100", q)
+    return result
+
+
 async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """사용자의 입력을 처리하고 버튼을 표시합니다."""
     user_input = update.message.text
@@ -124,17 +147,26 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     # 사용자 입력 저장
     user_inputs[user_id] = user_input
 
-    keyboard = [
-        [InlineKeyboardButton("N번째-명소 9", callback_data='place')],
-        [InlineKeyboardButton("홈URL 10", callback_data='home')],
-        [InlineKeyboardButton("홈URL-저장 15", callback_data='fav')],
-        [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
-        [InlineKeyboardButton("전화번호", callback_data='telno')]
-        # [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    await update.message.reply_text("어떤 작업을 수행할까요?", reply_markup=reply_markup)
+    # N번째-명소 유추
+    if user_input.split(' ')[0].isnumeric():
+        result = place_impl(user_input)
+        await update.message.reply_text(result)
+    else:
+        q, cons = parse_consonants_q(user_input)
+        if isconsonants(cons):
+            result = info(q, cons)
+            await update.message.reply_text(result)
+        else:
+            keyboard = [
+                [InlineKeyboardButton("N번째-명소 9", callback_data='place')],
+                [InlineKeyboardButton("홈URL 10", callback_data='home')],
+                [InlineKeyboardButton("홈URL-저장 15", callback_data='fav')],
+                [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
+                [InlineKeyboardButton("전화번호", callback_data='telno')]
+                # [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            await update.message.reply_text("어떤 작업을 수행할까요?", reply_markup=reply_markup)
 
 
 def main():
