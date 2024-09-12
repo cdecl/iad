@@ -417,7 +417,7 @@ def home(q: str = typer.Argument("")):
     return home_impl(q)
 
 
-@app.command()
+@app.command(name="fav")
 def homesave(q: str = typer.Argument("")):
     return home_impl(q, True)
 
