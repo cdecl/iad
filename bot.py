@@ -119,14 +119,14 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     await query.edit_message_text(f"{result}")
 
 
-def parse_consonants_q(user_input):
+def parse_consonants_q(user_input: str):
     args = user_input.split(' ')
     q = ' '.join(args[:-1])
     cons = args[-1]
     return (q, cons)
 
 
-def place_impl(user_input):
+def place_impl(user_input: str):
     result = "ex) 1 장소명"
 
     args = user_input.split(' ')
@@ -139,6 +139,20 @@ def place_impl(user_input):
     return result
 
 
+def homesavetelno_result(home: str, homesv: str, telno: str):
+    result = f"""
+# HOME URL
+{home}
+
+# HOME SAVE URL
+{homesv}
+
+# TELNO
+{telno}
+"""
+    return result
+
+
 async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """사용자의 입력을 처리하고 버튼을 표시합니다."""
     user_input = update.message.text
@@ -147,38 +161,32 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     # 사용자 입력 저장
     user_inputs[user_id] = user_input
 
-    # N번째-명소 유추
-    if user_input.split(' ')[0].isnumeric():
-        result = place_impl(user_input)
-        await update.message.reply_text(result)
-    else:
-        q, cons = parse_consonants_q(user_input)
-        if isconsonants(cons):
-            result = info(q, cons)
+    try:
+        # N번째-명소 유추
+        if user_input.split(' ')[0].isnumeric():
+            result = place_impl(user_input)
             await update.message.reply_text(result)
         else:
-            home, homesv, telno = homesavetelno(user_input)
-            result = f'''# home url
-{home}
+            q, cons = parse_consonants_q(user_input)
+            if isconsonants(cons):
+                result = info(q, cons)
+                await update.message.reply_text(result)
+            else:
+                home, homesv, telno = homesavetelno(user_input)
+                result = homesavetelno_result(home, homesv, telno)
+                await update.message.reply_text(result)
 
-# home save url
-{homesv}
-
-# telno
-{telno}
-'''
-            await update.message.reply_text(result)
-
-            # keyboard = [
-            #     [InlineKeyboardButton("N번째-명소 9", callback_data='place')],
-            #     [InlineKeyboardButton("홈URL 10", callback_data='home')],
-            #     [InlineKeyboardButton("홈URL-저장 15", callback_data='homesave')],
-            #     [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
-            #     [InlineKeyboardButton("전화번호", callback_data='telno')]
-            #     # [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
-            # ]
-            # reply_markup = InlineKeyboardMarkup(keyboard)
-            # await update.message.reply_text("어떤 작업을 수행할까요?", reply_markup=reply_markup)
+    except Exception:
+        keyboard = [
+            [InlineKeyboardButton("N번째-명소 9", callback_data='place')],
+            [InlineKeyboardButton("홈URL 10", callback_data='home')],
+            [InlineKeyboardButton("홈URL-저장 15", callback_data='homesave')],
+            [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
+            [InlineKeyboardButton("전화번호", callback_data='telno')]
+            # [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await update.message.reply_text("어떤 작업을 수행할까요?", reply_markup=reply_markup)
 
 
 def main():
