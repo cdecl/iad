@@ -347,6 +347,41 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
 
 
 @app.command()
+def homesavetelno(q: str = typer.Argument("")):
+    print('HOMESAVETELNO')
+    # clipboard_use = False
+
+    if not q:
+        q = clipboard.paste()
+        # clipboard_use = True
+
+    driver = create_mobile_driver()
+    url = search_naver(driver, q)
+
+    print(f'place url: {url}')
+    home, homesv, telnoText = None, None, None
+
+    if 'http' in url:
+        driver.get(url)
+        try:
+            current_url = driver.current_url
+            home = current_url
+            homesv = replaceHomeSaveUrl(home)
+            print(f'HOME={home}')
+            print(f'HOMESV={homesv}')
+
+            tno = driver.find_element(By.CSS_SELECTOR, '.xlx7Q')
+            telnoText = tno.text
+            print(f'TELNO: {telnoText}')
+
+        except Exception:
+            print('NOT FOUND')
+
+    driver.quit()
+    return home, homesv, telnoText
+
+
+@app.command()
 def telno(q: str = typer.Argument("")):
     clipboard_use = False
 
@@ -383,11 +418,11 @@ def home(q: str = typer.Argument("")):
 
 
 @app.command()
-def fav(q: str = typer.Argument("")):
+def homesave(q: str = typer.Argument("")):
     return home_impl(q, True)
 
 
-def home_impl(q: str, fav: bool = False):
+def home_impl(q: str, issaveurl: bool = False):
     clipboard_use = False
     result = None
 
@@ -404,7 +439,7 @@ def home_impl(q: str, fav: bool = False):
         driver.get(url)
         try:
             current_url = driver.current_url
-            if fav:
+            if issaveurl:
                 result = replaceHomeSaveUrl(current_url)
                 print(f'FAV: {result}')
             else:
@@ -412,7 +447,7 @@ def home_impl(q: str, fav: bool = False):
                 print(f'HOME: {result}')
 
             if clipboard_use:
-                if fav:
+                if issaveurl:
                     print(f'FAV: {result} → clipboard.copy')
                     clipboard.copy(result)
                 else:

@@ -3,7 +3,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
 import os
-from run import place, home, fav, telno, info
+from run import place, home, homesave, telno, info, homesavetelno
 from run_ex import goods
 from dotenv import load_dotenv
 
@@ -55,13 +55,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 #         await update.message.reply_text(f"except: {e}")
 
 
-# async def handle_fav(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# async def handle_homesave(update: Update, context: ContextTypes.DEFAULT_TYPE):
 #     try:
 #         q = ' '.join(context.args)
 #         if not q:
 #             raise Exception('질문오류 → /f 장소이름')
 
-#         r = fav(q)
+#         r = homesave(q)
 #         await update.message.reply_text(f'{r}')
 
 #     except Exception as e:
@@ -102,8 +102,8 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     elif query.data == 'home':
         result = home(user_input)
 
-    elif query.data == 'fav':
-        result = fav(user_input)
+    elif query.data == 'homesave':
+        result = homesave(user_input)
 
     elif query.data == 'info':
         result = "ex) 장소명 초성"
@@ -157,16 +157,28 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
             result = info(q, cons)
             await update.message.reply_text(result)
         else:
-            keyboard = [
-                [InlineKeyboardButton("N번째-명소 9", callback_data='place')],
-                [InlineKeyboardButton("홈URL 10", callback_data='home')],
-                [InlineKeyboardButton("홈URL-저장 15", callback_data='fav')],
-                [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
-                [InlineKeyboardButton("전화번호", callback_data='telno')]
-                # [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
-            ]
-            reply_markup = InlineKeyboardMarkup(keyboard)
-            await update.message.reply_text("어떤 작업을 수행할까요?", reply_markup=reply_markup)
+            home, homesv, telno = homesavetelno(user_input)
+            result = f'''# home url
+{home}
+
+# home save url
+{homesv}
+
+# telno
+{telno}
+'''
+            await update.message.reply_text(result)
+
+            # keyboard = [
+            #     [InlineKeyboardButton("N번째-명소 9", callback_data='place')],
+            #     [InlineKeyboardButton("홈URL 10", callback_data='home')],
+            #     [InlineKeyboardButton("홈URL-저장 15", callback_data='homesave')],
+            #     [InlineKeyboardButton("초성퀴즈 6", callback_data='info')],
+            #     [InlineKeyboardButton("전화번호", callback_data='telno')]
+            #     # [InlineKeyboardButton("상품코드(스토어)", callback_data='goods')]
+            # ]
+            # reply_markup = InlineKeyboardMarkup(keyboard)
+            # await update.message.reply_text("어떤 작업을 수행할까요?", reply_markup=reply_markup)
 
 
 def main():
@@ -177,7 +189,7 @@ def main():
     app.add_handler(CommandHandler(["start", "help"], start))
     # app.add_handler(CommandHandler(["place", "p"], handle_place))
     # app.add_handler(CommandHandler(["home", "h"], handle_home))
-    # app.add_handler(CommandHandler(["fav", "f"], handle_fav))
+    # app.add_handler(CommandHandler(["homesave", "f"], handle_homesave))
     app.add_handler(MessageHandler(filters.COMMAND, start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_input))
     app.add_handler(CallbackQueryHandler(button_callback))
