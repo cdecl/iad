@@ -36,6 +36,7 @@ def on_btnExec_click():
 
     lbl_result.set(result)
     on_btnHomeCopy_click()
+    root.update()
     beep()
 
 
@@ -47,6 +48,17 @@ def on_btnPaste_click():
     lbl_telno.set("")
     root.update()
     # beep()
+
+
+def on_btnConcat_click():
+    text = clipboard.paste()
+    concat = f'{lbl_input.get()} {text}'
+    lbl_input.set(concat)
+
+
+def on_btnRun_click():
+    btnPaste.invoke()
+    btnExec.invoke()
 
 
 def on_btnHomeCopy_click():
@@ -67,18 +79,18 @@ def on_btnCopyTelno_click():
 # 기본 윈도우 생성
 root = tk.Tk()
 root.title("IAD UI")
-root.geometry("700x200")
+root.geometry("750x200")
 
 
 lbl_input = tk.StringVar()
 txtInput = tk.Entry(root, width=50, textvariable=lbl_input)
 txtInput.grid(row=0, column=0, padx=3, pady=3)
 
-btnPaste = tk.Button(root, text="Paste (v)", command=on_btnPaste_click)
+btnPaste = tk.Button(root, text="Paste (p)", command=on_btnPaste_click)
 btnPaste.grid(row=0, column=1, padx=3, pady=3, sticky="w")
 
-btnExec = tk.Button(root, text="실 행 (r)", command=on_btnExec_click)
-btnExec.grid(row=0, column=2, padx=3, pady=3, sticky="w")
+btnConcat = tk.Button(root, text="초성덧붙이기 (o)", command=on_btnConcat_click)
+btnConcat.grid(row=0, column=2, padx=3, pady=3, sticky="w")
 
 lbl_result = tk.StringVar()
 txtResult = tk.Entry(root, width=50, textvariable=lbl_result)
@@ -87,6 +99,8 @@ txtResult.grid(row=1, column=0, padx=3, pady=3)
 btnHomeCopy = tk.Button(root, text="홈URL복사(h)", command=on_btnHomeCopy_click)
 btnHomeCopy.grid(row=1, column=1, padx=3, pady=3, sticky="w")
 
+btnExec = tk.Button(root, text="실 행 (e)", command=on_btnExec_click)
+btnExec.grid(row=1, column=2, padx=3, pady=3, sticky="w")
 
 lbl_homesave = tk.StringVar()
 txtHomeSave = tk.Entry(root, width=50, textvariable=lbl_homesave)
@@ -94,6 +108,9 @@ txtHomeSave.grid(row=2, column=0, padx=3, pady=3)
 
 btnCopyHomeSave = tk.Button(root, text="홈URL저장복사(f)", command=on_btnCopyHomeSave_click)
 btnCopyHomeSave.grid(row=2, column=1, padx=3, pady=3, sticky="w")
+
+btnRun = tk.Button(root, text="전체실행 (r)", command=on_btnRun_click)
+btnRun.grid(row=2, column=2, padx=3, pady=3, sticky="w")
 
 lbl_telno = tk.StringVar()
 txtTelno = tk.Entry(root, width=50, textvariable=lbl_telno)
@@ -103,8 +120,10 @@ btnCopyTelno = tk.Button(root, text="전화번호복사(t)", command=on_btnCopyT
 btnCopyTelno.grid(row=3, column=1, padx=3, pady=3, sticky="w")
 
 
-root.bind('v', lambda event: btnPaste.invoke())
-root.bind('r', lambda event: (btnPaste.invoke(), btnExec.invoke()))
+root.bind('p', lambda event: btnPaste.invoke())
+root.bind('o', lambda event: btnConcat.invoke())
+root.bind('e', lambda event: btnExec.invoke())
+root.bind('r', lambda event: btnRun.invoke())
 root.bind('h', lambda event: btnHomeCopy.invoke())
 root.bind('f', lambda event: btnCopyHomeSave.invoke())
 root.bind('t', lambda event: btnCopyTelno.invoke())
