@@ -89,7 +89,7 @@ txtInput.grid(row=0, column=0, padx=3, pady=3)
 btnPaste = tk.Button(root, text="Paste (p)", command=on_btnPaste_click)
 btnPaste.grid(row=0, column=1, padx=3, pady=3, sticky="w")
 
-btnConcat = tk.Button(root, text="초성덧붙이기 (o)", command=on_btnConcat_click)
+btnConcat = tk.Button(root, text="+초성 실행 (o)", command=on_btnConcat_click)
 btnConcat.grid(row=0, column=2, padx=3, pady=3, sticky="w")
 
 lbl_result = tk.StringVar()
