@@ -14,8 +14,7 @@ def on_num_key_pressed(n: str):
     on_btnPaste_click()
     lbl_input.set(f'{n} {lbl_input.get()}')
     root.update()
-    on_btnExec_click()
-    on_btnHomeCopy_click()
+    btnExec.invoke()
 
 
 # 버튼 클릭 시 실행되는 함수
@@ -35,7 +34,7 @@ def on_btnExec_click():
             lbl_telno.set(telno)
 
     lbl_result.set(result)
-    on_btnHomeCopy_click()
+    btnHomeCopy.invoke()
     root.update()
     beep()
 
@@ -54,6 +53,7 @@ def on_btnConcat_click():
     text = clipboard.paste()
     concat = f'{lbl_input.get()} {text}'
     lbl_input.set(concat)
+    btnExec.invoke()
 
 
 def on_btnRun_click():
