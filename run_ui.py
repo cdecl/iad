@@ -76,6 +76,11 @@ def on_btnCopyTelno_click():
     clipboard.copy(text)
 
 
+def on_btnHomeSaveExec_click():
+    btnRun.invoke()
+    btnCopyHomeSave.invoke()
+
+
 # 기본 윈도우 생성
 root = tk.Tk()
 root.title("IAD UI")
@@ -122,8 +127,11 @@ btnCopyTelno.grid(row=3, column=1, padx=3, pady=3, sticky="w")
 
 root.bind('p', lambda event: btnPaste.invoke())
 root.bind('o', lambda event: btnConcat.invoke())
+
 root.bind('e', lambda event: btnExec.invoke())
 root.bind('r', lambda event: btnRun.invoke())
+root.bind('s', lambda event: on_btnHomeSaveExec_click())
+
 root.bind('h', lambda event: btnHomeCopy.invoke())
 root.bind('f', lambda event: btnCopyHomeSave.invoke())
 root.bind('t', lambda event: btnCopyTelno.invoke())
