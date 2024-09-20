@@ -88,6 +88,12 @@ def on_btnHomeSaveRun_click():
     btnCopyHomeSave.invoke()
 
 
+def update_timer():
+    text = clipboard.paste()
+    lblClipboard.config(text=text, )
+    root.after(500, update_timer)
+
+
 # 기본 윈도우 생성
 root = tk.Tk()
 root.title("IAD UI")
@@ -149,6 +155,9 @@ btnCopyTelno.grid(row=3, column=2, padx=3, pady=3, sticky="w")
 btnExec = tk.Button(root, text="실 행 (e)", command=on_btnExec_click)
 btnExec.grid(row=5, column=2, padx=3, pady=3, sticky="w")
 
+lblClipboard = tk.Label(root, width=50, text="",  anchor="w")
+lblClipboard.grid(row=5, column=1, padx=3, pady=3, sticky="w")
+
 
 root.bind('p', lambda event: btnPaste.invoke())
 root.bind('o', lambda event: btnConcat.invoke())
@@ -163,6 +172,8 @@ root.bind('t', lambda event: btnCopyTelno.invoke())
 
 for i in range(1, 9):
     root.bind(str(i), lambda event, num=i: on_num_key_pressed(num))
+
+root.after(1000, update_timer)
 
 # 메인 루프 실행
 root.mainloop()
