@@ -32,26 +32,30 @@ def extract_consonants(hangul_text: str) -> str:
     return ''.join(result)
 
 
-def toOrder(s: str):
-    order = None
+def isfloat(value):
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
 
-    if s.isnumeric():
-        order = int(s)
+
+def toOrder(s: str):
+    order = 1
+
+    if isfloat(s):
+        order = int(float(s))
     else:
-        if s == "첫":
-            order = 1
-        elif s == "두":
-            order = 2
-        elif s == "세":
-            order = 3
-        elif s == "네":
-            order = 4
-        elif s == "다섯":
-            order = 5
-        elif s == "여섯":
-            order = 6
-        else:
-            order = 1
+        order_dict = {
+            "첫": 1,
+            "두": 2,
+            "세": 3,
+            "네": 4,
+            "다섯": 5,
+            "여섯": 6,
+            "일곱": 7
+        }
+        order = order_dict.get(s, 1)
     return order
 
 
