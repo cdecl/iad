@@ -45,9 +45,9 @@ class TestCase01(unittest.TestCase):
         driver.get(url)
 
         body = driver.find_element(By.CSS_SELECTOR, 'body')
-        dicBody= json.loads(body.text)
+        dicBody = json.loads(body.text)
 
         rurl = dicBody['url']
-        self.assertEqual(rurl, url, msg=f'rurl')
+        self.assertEqual(rurl, url, msg=f'{rurl}')
 
         driver.quit()
