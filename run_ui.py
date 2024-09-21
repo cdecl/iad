@@ -91,7 +91,7 @@ def on_btnHomeSaveRun_click():
 def update_timer():
     text = clipboard.paste()
     lblClipboard.config(text=text, )
-    root.after(500, update_timer)
+    root.after(200, update_timer)
 
 
 # 기본 윈도우 생성
