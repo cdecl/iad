@@ -7,6 +7,7 @@ import os
 import time
 
 INTERVAL = 0.05
+save_clipboard = None
 
 
 def beep():
@@ -89,15 +90,32 @@ def on_btnHomeSaveRun_click():
 
 
 def update_timer():
+    global save_clipboard
     text = clipboard.paste()
-    lblClipboard.config(text=text, )
+
+    change = False
+    if text != save_clipboard:
+        change = True
+        lblClipboard.config(text=text)
+
+    mode = auto_var.get()
+    if 'http' not in text and mode != 1 and change:
+        if mode == 2:
+            if isconsonants(text):
+                btnConcat.invoke()
+            else:
+                btnRun.invoke()
+        elif mode == 3:
+            btnHomeSaveRun.invoke()
+
+    save_clipboard = text
     root.after(200, update_timer)
 
 
 # 기본 윈도우 생성
 root = tk.Tk()
 root.title("IAD UI")
-root.geometry("850x200")
+root.geometry("850x270")
 
 lblInput = tk.Label(root, text="입 력:")
 lblInput.grid(row=0, column=0, padx=3, pady=3, sticky="w")
@@ -155,8 +173,17 @@ btnCopyTelno.grid(row=3, column=2, padx=3, pady=3, sticky="w")
 btnExec = tk.Button(root, text="실 행 (e)", command=on_btnExec_click)
 btnExec.grid(row=5, column=2, padx=3, pady=3, sticky="w")
 
-lblClipboard = tk.Label(root, width=50, text="",  anchor="w")
+lblClipboard = tk.Label(root, width=50, text="", anchor="w")
 lblClipboard.grid(row=5, column=1, padx=3, pady=3, sticky="w")
+
+
+auto_var = tk.IntVar()
+radio1 = tk.Radiobutton(root, text="이벤트: 없음", variable=auto_var, value=1)
+radio1.grid(row=6, column=1, padx=3, pady=3, sticky="w")
+radio2 = tk.Radiobutton(root, text="이벤트: 홈URL;초성", variable=auto_var, value=2)
+radio2.grid(row=7, column=1, padx=3, pady=3, sticky="w")
+radio3 = tk.Radiobutton(root, text="이벤트: 홈URL저장", variable=auto_var, value=3)
+radio3.grid(row=8, column=1, padx=3, pady=3, sticky="w")
 
 
 root.bind('p', lambda event: btnPaste.invoke())
@@ -173,9 +200,9 @@ root.bind('t', lambda event: btnCopyTelno.invoke())
 for i in range(1, 9):
     root.bind(str(i), lambda event, num=i: on_num_key_pressed(num))
 
+auto_var.set(1)
+clipboard.copy("")
 root.after(1000, update_timer)
 
 # 메인 루프 실행
 root.mainloop()
-
-
