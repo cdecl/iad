@@ -101,12 +101,14 @@ def update_timer():
     mode = auto_var.get()
     if 'http' not in text and mode != 1 and change:
         if mode == 2:
+            btnRun.invoke()
+        elif mode == 3:
+            btnHomeSaveRun.invoke()
+        elif mode == 4:
             if isconsonants(text):
                 btnConcat.invoke()
             else:
-                btnRun.invoke()
-        elif mode == 3:
-            btnHomeSaveRun.invoke()
+                btnPaste.invoke()
 
     save_clipboard = text
     root.after(200, update_timer)
@@ -115,7 +117,7 @@ def update_timer():
 # 기본 윈도우 생성
 root = tk.Tk()
 root.title("IAD UI")
-root.geometry("850x270")
+root.geometry("850x250")
 
 lblInput = tk.Label(root, text="입 력:")
 lblInput.grid(row=0, column=0, padx=3, pady=3, sticky="w")
@@ -177,13 +179,26 @@ lblClipboard = tk.Label(root, width=50, text="", anchor="w")
 lblClipboard.grid(row=5, column=1, padx=3, pady=3, sticky="w")
 
 
+frame = tk.Frame(root, bd=1, relief=tk.SOLID)
+frame.grid(row=6, column=1, sticky="w")
+
 auto_var = tk.IntVar()
-radio1 = tk.Radiobutton(root, text="이벤트: 없음", variable=auto_var, value=1)
-radio1.grid(row=6, column=1, padx=3, pady=3, sticky="w")
-radio2 = tk.Radiobutton(root, text="이벤트: 홈URL;초성", variable=auto_var, value=2)
-radio2.grid(row=7, column=1, padx=3, pady=3, sticky="w")
-radio3 = tk.Radiobutton(root, text="이벤트: 홈URL저장", variable=auto_var, value=3)
-radio3.grid(row=8, column=1, padx=3, pady=3, sticky="w")
+radio1 = tk.Radiobutton(frame, text="트리거: 없음", variable=auto_var, value=1)
+radio1.grid(row=0, column=0, padx=3, pady=3, sticky="w")
+radio2 = tk.Radiobutton(frame, text="홈URL", variable=auto_var, value=2)
+radio2.grid(row=0, column=1, padx=3, pady=3, sticky="w")
+radio3 = tk.Radiobutton(frame, text="홈URL저장", variable=auto_var, value=3)
+radio3.grid(row=0, column=2, padx=3, pady=3, sticky="w")
+radio4 = tk.Radiobutton(frame, text="+초성", variable=auto_var, value=4)
+radio4.grid(row=0, column=3, padx=3, pady=3, sticky="w")
+
+# auto_var = tk.IntVar()
+# radio1 = tk.Radiobutton(root, text="이벤트: 없음", variable=auto_var, value=1)
+# radio1.grid(row=6, column=1, padx=3, pady=3, sticky="w")
+# radio2 = tk.Radiobutton(root, text="이벤트: 홈URL;초성", variable=auto_var, value=2)
+# radio2.grid(row=7, column=1, padx=3, pady=3, sticky="w")
+# radio3 = tk.Radiobutton(root, text="이벤트: 홈URL저장", variable=auto_var, value=3)
+# radio3.grid(row=8, column=1, padx=3, pady=3, sticky="w")
 
 
 root.bind('p', lambda event: btnPaste.invoke())
