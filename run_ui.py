@@ -5,13 +5,15 @@ from run import info
 from bot import parse_consonants_q, isconsonants, homesavetelno, place_impl
 import os
 import time
+import sys
 
 INTERVAL = 0.05
 save_clipboard = None
 
 
 def beep():
-    os.system("osascript -e 'beep'")
+    if sys.platform == "darwin":
+        os.system("osascript -e 'beep'")
 
 
 def on_num_key_pressed(n: str):
