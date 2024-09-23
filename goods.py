@@ -53,7 +53,7 @@ def page(url: str):
 
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
-    qinfo = driver.find_element(By.CLASS_NAME, 'quiz-info')
+    qinfo = driver.find_element(By.CLASS_NAME, 'mission__guide')
     q_txt = qinfo.text
     print(q_txt)
 
@@ -61,7 +61,7 @@ def page(url: str):
     pdcode = run(q_txt)
 
     if pdcode:
-        quizAnswer = driver.find_element(By.ID, 'quizAnswer')
+        quizAnswer = driver.find_element(By.NAME, 'quizAnswer')
         quizAnswer.send_keys(pdcode)
         save_button = driver.find_element(By.ID, 'saveBtn')
         save_button.click()
@@ -75,7 +75,7 @@ def page(url: str):
 
 
 def parseGoods(s: str):
-    nm = store = price = name = None
+    keyword = store = price = name = None
 
     # match = re.search(r'2.*\r?\n\r?\n(.*)', s, re.M)
     # if match: nm = match.group(1).strip()
@@ -87,36 +87,45 @@ def parseGoods(s: str):
     match = re.search(r'가격 : (.*)', s)
     if match:
         price = match.group(1).strip()
+        if not price:
+            price = 0
 
     match = re.search(r'상품명 : (.*)', s)
     if match:
         name = match.group(1).strip()
 
-    return [nm, store, price, name]
+    if not keyword:
+        keyword = name
+
+    return [keyword, store, price, name]
 
 
 @app.command()
 def run(q: str = typer.Argument("")):
     clipboard_use = False
+    pdcode = None
 
     if not q:
         q = clipboard.paste()
         clipboard_use = True
 
-    gd = parseGoods(q)
-    print(gd)
+    goodsinfo = parseGoods(q)
+    print(f'parseGoods: {goodsinfo}')
 
-    if not gd[1]:
+    if not goodsinfo[1]:
         print("QUIZ 형식이 맞지 않습니다.")
         return None
 
-    if not gd[0]:
-        gd[0] = gd[3]
-    if not gd[2]:
-        gd[2] = "0"
-    print(gd)
+    pdcode = search_naver(goodsinfo[0], goodsinfo[1], goodsinfo[2], goodsinfo[3])
 
-    q = gd[0]
+    if clipboard_use:
+        clipboard.copy(pdcode)
+
+    return pdcode
+
+
+def search_naver(keyword: str, store_in: str, price_in: str, name_in: str):
+    q = keyword
     url = f'https://m.search.naver.com/search.naver?query={q}'
     print(url)
 
@@ -148,21 +157,17 @@ def run(q: str = typer.Argument("")):
     pdcode = None
 
     for item in results:
-        if (item["store"] == gd[1] and item["price"].replace(',', '') == gd[2].replace(',', '') and item["name"].strip() == gd[3].strip()):
-            print(item)
+        if (item["store"] == store_in and item["price"].replace(',', '') == price_in.replace(',', '') and item["name"].strip() == name_in.strip()):
+            print(f'for item in results: {item}')
             pdcode = getUrlCode(item["url"], driver)
-            if clipboard_use:
-                clipboard.copy(pdcode)
             price_match = True
             exit
 
     if not price_match:
         for item in results:
-            if (item["store"] == gd[1] and item["name"].strip() == gd[3].strip()):
-                print(item)
+            if (item["store"] == store_in and item["name"].strip() == name_in.strip()):
+                print(f'if not price_match: {item}')
                 pdcode = getUrlCode(item["url"], driver)
-                if clipboard_use:
-                    clipboard.copy(pdcode)
                 exit
 
     driver.quit()

@@ -153,7 +153,7 @@ def list(verbose: bool = typer.Option(False, "-v/", help="verbose mode"), interv
 @app.command()
 def page(url: str):
     success = False
-    print(url)
+    print(f'URL: {url}')
 
     driver = create_mobile_driver()
     driver.get(url)
@@ -161,6 +161,7 @@ def page(url: str):
     time.sleep(PAGE_SLEEP)  # 필요에 따라 조정
 
     copyTxt, info_txt = getQuizInfo(driver)
+    print(f'copyTxt: {copyTxt}')
     print(f'info: {info_txt}')
 
     info = getPlaceFilter(info_txt)
@@ -191,10 +192,10 @@ def page(url: str):
 
 
 def getQuizInfo(driver):
-    copyTxtNode = driver.find_element(By.CSS_SELECTOR, '#copyTxt')
+    copyTxtNode = driver.find_element(By.CSS_SELECTOR, '.mission__shop')
     copyTxt = copyTxtNode.text
 
-    quiz_info = driver.find_element(By.CSS_SELECTOR, 'div.quiz-info')
+    quiz_info = driver.find_element(By.CLASS_NAME, 'mission__guide')
     info_txt = quiz_info.text
     return copyTxt, info_txt
 
@@ -265,7 +266,7 @@ def telno_action(driver, txt):
 
 
 def save_action(driver, answer):
-    searchAnswer = driver.find_element(By.ID, 'searchAnswer')
+    searchAnswer = driver.find_element(By.NAME, 'searchAnswer')
     searchAnswer.send_keys(answer)
     saveBtn = driver.find_element(By.ID, 'saveBtn')
     saveBtn.click()
