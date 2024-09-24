@@ -141,14 +141,14 @@ def place_impl(user_input: str):
 
 def homesavetelno_result(home: str, homesv: str, telno: str):
     result = f"""
-# HOME URL
-{home}
+- HOME URL
+`{home}`
 
-# HOME SAVE URL
-{homesv}
+- HOME SAVE URL
+`{homesv}`
 
-# TELNO
-{telno}
+- TELNO
+`{telno}`
 """
     return result
 
@@ -165,16 +165,16 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         # N번째-명소 유추
         if user_input.split(' ')[0].isnumeric():
             result = place_impl(user_input)
-            await update.message.reply_text(result)
+            await update.message.reply_text(result, parse_mode='Markdown')
         else:
             q, cons = parse_consonants_q(user_input)
             if isconsonants(cons):
                 result = info(q, cons)
-                await update.message.reply_text(result)
+                await update.message.reply_text(result, parse_mode='Markdown')
             else:
                 home, homesv, telno = homesavetelno(user_input)
                 result = homesavetelno_result(home, homesv, telno)
-                await update.message.reply_text(result)
+                await update.message.reply_text(result, parse_mode='Markdown')
 
     except Exception:
         keyboard = [
