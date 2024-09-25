@@ -172,13 +172,8 @@ def replaceParkingUrl(url: str):
 
 
 def replaceMapUrl(url: str, filter: str):
-    # taillUrl = f'/location?entry=pll&filter={filter}'
     taillUrl = f'/location?from=search&filter={filter}'
-    r = None
-    if r'?' in url:
-        r = re.sub(r'(\/home\?|\?).*$', taillUrl, url)
-    else:
-        r = f'{url}{taillUrl}'
+    r = re.sub(r'(\/[0-9]{6,}+)(\/.*)$', f'\\1{taillUrl}', url)
     return r
 
 
