@@ -153,6 +153,14 @@ def homesavetelno_result(home: str, homesv: str, telno: str):
     return result
 
 
+def reply_result(msg: str, title: str):
+    result = f"""
+> {title}
+`{msg}`
+"""
+    return result
+
+
 async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """사용자의 입력을 처리하고 버튼을 표시합니다."""
     user_input = update.message.text
@@ -166,12 +174,12 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         # N번째-명소 유추
         if user_input.split(' ')[0].isnumeric():
             result = place_impl(user_input)
-            await update.message.reply_text(result, parse_mode=mode)
+            await update.message.reply_text(reply_result(result, "명소"), parse_mode=mode)
         else:
             q, cons = parse_consonants_q(user_input)
             if isconsonants(cons):
                 result = info(q, cons)
-                await update.message.reply_text(result, parse_mode=mode)
+                await update.message.reply_text(reply_result(result, "초성"), parse_mode=mode)
             else:
                 home, homesv, telno = homesavetelno(user_input)
                 result = homesavetelno_result(home, homesv, telno)
