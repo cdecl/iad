@@ -1,4 +1,5 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.alert import Alert
 
 from driver import create_mobile_driver
 from run_ex import transport, parking, search_naver, replaceHomeSaveUrl
@@ -268,8 +269,14 @@ def telno_action(driver, txt):
 def save_action(driver, answer):
     searchAnswer = driver.find_element(By.NAME, 'searchAnswer')
     searchAnswer.send_keys(answer)
-    saveBtn = driver.find_element(By.ID, 'saveBtn')
-    saveBtn.click()
+    # saveBtn = driver.find_element(By.ID, 'saveBtn')
+    # saveBtn.click()
+    result = driver.execute_script("return document.querySelector('#saveBtn').click();")
+    print(f'> SAVE_ACTION : {result}')
+
+    alert = Alert(driver)
+    print(f'> SAVE_ALERT : {alert.text}')
+    alert.accept()
 
 
 @app.command()

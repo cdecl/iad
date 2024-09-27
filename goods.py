@@ -1,4 +1,5 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.alert import Alert
 from driver import create_driver, create_mobile_driver
 
 import time
@@ -61,10 +62,7 @@ def page(url: str):
     pdcode = run(q_txt)
 
     if pdcode:
-        quizAnswer = driver.find_element(By.NAME, 'quizAnswer')
-        quizAnswer.send_keys(pdcode)
-        save_button = driver.find_element(By.ID, 'saveBtn')
-        save_button.click()
+        save_action(driver, pdcode)
         success = True
         print(f'{pdcode} → save_button.click(success)')
     else:
@@ -72,6 +70,19 @@ def page(url: str):
 
     driver.quit()
     return success
+
+
+def save_action(driver, pdcode):
+    quizAnswer = driver.find_element(By.NAME, 'quizAnswer')
+    quizAnswer.send_keys(pdcode)
+    # save_button = driver.find_element(By.ID, 'saveBtn')
+    # save_button.click()
+    result = driver.execute_script("return document.querySelector('#saveBtn').click();")
+    print(f'> SAVE_ACTION : {result}')
+
+    alert = Alert(driver)
+    print(f'> SAVE_ALERT : {alert.text}')
+    alert.accept()
 
 
 def parseGoods(s: str):
