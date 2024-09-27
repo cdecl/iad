@@ -156,6 +156,7 @@ def homesavetelno_result(home: str, homesv: str, telno: str):
 def reply_result(msg: str, title: str):
     result = f"""
 > {title}
+
 `{msg}`
 """
     return result
