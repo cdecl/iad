@@ -79,10 +79,18 @@ def save_action(driver, pdcode):
     # save_button.click()
     result = driver.execute_script("return document.querySelector('#saveBtn').click();")
     print(f'> SAVE_ACTION : {result}')
+    alert_confirm(driver)
 
-    alert = Alert(driver)
-    print(f'> SAVE_ALERT : {alert.text}')
-    alert.accept()
+
+def alert_confirm(driver):
+    alert_text = 'NO ALERT'
+    try:
+        alert = Alert(driver)
+        alert_text = alert.text
+        alert.accept()
+    except Exception:
+        pass
+    print(f'> SAVE_ALERT : {alert_text}')
 
 
 def parseGoods(s: str):
