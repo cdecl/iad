@@ -273,6 +273,8 @@ def save_action(driver, answer):
     # saveBtn.click()
     result = driver.execute_script("return document.querySelector('#saveBtn').click();")
     print(f'> SAVE_ACTION : {result}')
+    
+    time.sleep(PAGE_SLEEP)
     alert_confirm(driver)
 
 
