@@ -149,6 +149,8 @@ def homesavetelno_result(home: str, homesv: str, telno: str):
 
 > TELNO
 `{telno}`
+
+`.`
 """
     return result
 
@@ -159,6 +161,8 @@ def reply_result(msg: str, title: str):
 
 
 `{msg}`
+
+`.`
 """
     return result
 
