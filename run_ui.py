@@ -1,7 +1,7 @@
 import tkinter as tk
 # from tkinter import messagebox
 import clipboard
-from run import info
+from run import info, getFilterCode
 from bot import parse_consonants_q, isconsonants, homesavetelnotran, place_impl
 import os
 import time
@@ -26,9 +26,12 @@ def on_num_key_pressed(n: str):
 # 버튼 클릭 시 실행되는 함수
 def on_btnExec_click():
     user_input = txtInput.get()
+    result = None
 
     if user_input.split(' ')[0].isnumeric():
-        result = place_impl(user_input)
+        place = place_impl(user_input, getFilterCode("명소"))
+        if len(place) > 1:
+            result = place[0]["명소"]
     else:
         q, cons = parse_consonants_q(user_input)
         if isconsonants(cons):
@@ -189,7 +192,7 @@ lbl_trans = tk.StringVar()
 txtTrans = tk.Entry(root, width=50, textvariable=lbl_trans)
 txtTrans.grid(row=4, column=1, padx=3, pady=3)
 
-btnCopyTrans = tk.Button(root, text="← 복사(t)", command=on_btnCopyTrans_click)
+btnCopyTrans = tk.Button(root, text="← 복사", command=on_btnCopyTrans_click)
 btnCopyTrans.grid(row=4, column=2, padx=3, pady=3, sticky="w")
 
 

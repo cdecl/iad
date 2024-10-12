@@ -126,7 +126,7 @@ def parse_consonants_q(user_input: str):
     return (q, cons)
 
 
-def place_impl(user_input: str):
+def place_impl(user_input: str, place_param: str = PLACE_PARAM):
     result = "ex) 1 장소명"
 
     args = user_input.split(' ')
@@ -135,7 +135,7 @@ def place_impl(user_input: str):
         if order_in.isnumeric:
             order = int(args[0])
             q = ' '.join(args[1:])
-            result = place_custom(order, PLACE_PARAM, q)
+            result = place_custom(order, place_param, q)
     return result
 
 
