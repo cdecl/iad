@@ -2,7 +2,7 @@ import tkinter as tk
 # from tkinter import messagebox
 import clipboard
 from run import info
-from bot import parse_consonants_q, isconsonants, homesavetelno, place_impl
+from bot import parse_consonants_q, isconsonants, homesavetelnotran, place_impl
 import os
 import time
 import sys
@@ -34,10 +34,11 @@ def on_btnExec_click():
         if isconsonants(cons):
             result = info(q, cons)
         else:
-            home, homesv, telno = homesavetelno(user_input)
+            home, homesv, telno, tranUrl = homesavetelnotran(user_input)
             result = home
             lbl_homesave.set(homesv)
             lbl_telno.set(telno)
+            lbl_trans.set(tranUrl)
 
     lbl_result.set(result)
     btnHomeCopy.invoke()
@@ -78,6 +79,12 @@ def on_btnCopyHomeSave_click():
 def on_btnCopyTelno_click():
     time.sleep(INTERVAL)
     text = lbl_telno.get()
+    clipboard.copy(text)
+
+
+def on_btnCopyTrans_click():
+    time.sleep(INTERVAL)
+    text = lbl_trans.get()
     clipboard.copy(text)
 
 
@@ -172,6 +179,17 @@ txtTelno.grid(row=3, column=1, padx=3, pady=3)
 
 btnCopyTelno = tk.Button(root, text="← 복사(t)", command=on_btnCopyTelno_click)
 btnCopyTelno.grid(row=3, column=2, padx=3, pady=3, sticky="w")
+
+
+lblR4 = tk.Label(root, text="결과 (주변정류장):")
+lblR4.grid(row=4, column=0, padx=3, pady=3, sticky="w")
+
+lbl_trans = tk.StringVar()
+txtTrans = tk.Entry(root, width=50, textvariable=lbl_trans)
+txtTrans.grid(row=4, column=1, padx=3, pady=3)
+
+btnCopyTrans = tk.Button(root, text="← 복사(t)", command=on_btnCopyTrans_click)
+btnCopyTrans.grid(row=4, column=2, padx=3, pady=3, sticky="w")
 
 
 btnExec = tk.Button(root, text="실 행 (e)", command=on_btnExec_click)
