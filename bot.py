@@ -3,7 +3,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
 import os
-from run import place, home, homesave, telno, info, homesavetelnotran
+from run import place_custom, home, homesave, telno, info, homesavetelnotran, PLACE_PARAM
 from run_ex import goods
 from dotenv import load_dotenv
 
@@ -135,7 +135,18 @@ def place_impl(user_input: str):
         if order_in.isnumeric:
             order = int(args[0])
             q = ' '.join(args[1:])
-            result = place(order, "100", q)
+            result = place_custom(order, PLACE_PARAM, q)
+    return result
+
+
+def place_result(places: list[dict[str, str]]):
+    result = ""
+    for place in places:
+        for key, value in place.items():
+            key = key.replace('-', '\\-')
+            result += f"> {key}\n`{value}`\n\n"
+
+    result += "`.`"
     return result
 
 
@@ -181,8 +192,9 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     try:
         # N번째-명소 유추
         if user_input.split(' ')[0].isnumeric():
-            result = place_impl(user_input)
-            await update.message.reply_text(reply_result(result, "명소"), parse_mode=mode)
+            places = place_impl(user_input)
+            result = place_result(places)
+            await update.message.reply_text(result, parse_mode=mode)
         else:
             q, cons = parse_consonants_q(user_input)
             if isconsonants(cons):

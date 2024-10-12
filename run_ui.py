@@ -52,6 +52,7 @@ def on_btnPaste_click():
     lbl_result.set("")
     lbl_homesave.set("")
     lbl_telno.set("")
+    lbl_trans.set("")
     root.update()
     # beep()
 
@@ -126,7 +127,7 @@ def update_timer():
 # 기본 윈도우 생성
 root = tk.Tk()
 root.title("IAD UI")
-root.geometry("850x250")
+root.geometry("850x270")
 
 lblInput = tk.Label(root, text="입 력:")
 lblInput.grid(row=0, column=0, padx=3, pady=3, sticky="w")

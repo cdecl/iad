@@ -11,6 +11,22 @@ import re
 app = typer.Typer()
 
 PAGE_SLEEP = 0.2
+PLACE_PARAM = "100-30-30,30072-30,60008-30,30069"
+
+
+def getFilterName(s: str):
+    ret = None
+    code = {
+        "100": "명소",
+        "30": "놀거리",
+        "30,30072": "놀거리-도서관",
+        "30,60008": "놀거리-체험학습",
+        "30,30069": "놀거리-시장",
+        "50": "취미생활"
+    }
+    if s in code:
+        ret = code[s]
+    return ret
 
 
 def extract_consonants(hangul_text: str) -> str:
@@ -297,11 +313,18 @@ def code(idx: int, id: str, filter=typer.Argument("100")):
     return retCode
 
 
-def code_internal(driver, idx: int, id: str, filter: str, quisConsonants=typer.Argument("")):
+def code_internal(driver, idx: int, id: str, filters: str, quisConsonants=typer.Argument("")):
     retCode = None
-    url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter={filter}'
-    print(url)
+    filter_arg = filters.split(',')
 
+    filter_p = filter_arg[0]
+    url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter={filter_p}'
+
+    if len(filter_arg) > 1:
+        tag_p = filter_arg[1]
+        url = f'https://m.place.naver.com/restaurant/{id}/around?entry=pll&filter={filter_p}&tag={tag_p}'
+
+    print(url)
     driver.get(url)
 
     # 페이지 로딩을 기다림
@@ -338,6 +361,12 @@ def play(idx: int, filter: str = typer.Argument("30"), q: str = typer.Argument("
     return place(idx, filter, q)
 
 
+# 놀거리/도서관
+@app.command(name="lib")
+def play_libarary(idx: int, filter: str = typer.Argument("30,30072"), q: str = typer.Argument("")):
+    return place(idx, filter, q)
+
+
 # 명소
 @app.command()
 def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument(""), quistext: str = typer.Argument("")):
@@ -363,6 +392,42 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
             if clipboard_use:
                 print(f'placeName: {placeName} → clipboard.copy')
                 clipboard.copy(placeName)
+
+    driver.quit()
+    return placeName
+
+
+# 장소 멀티
+@app.command(name="p")
+def place_custom(idx: int, filters: str = typer.Argument(PLACE_PARAM), q: str = typer.Argument(""), quistext: str = typer.Argument("")):
+    # clipboard_use = False
+    placeName = None
+
+    if not q:
+        q = clipboard.paste()
+        # clipboard_use = True
+
+    driver = create_mobile_driver()
+    url = search_naver(driver, q)
+
+    print(f'place url: {url}')
+
+    placeName = []
+    if 'http' in url:
+        place = getPlaceCode(url)
+        print(f'place: {place}')
+
+        if place:
+            filter_arg = filters.split('-')
+            for filter in filter_arg:
+                name = code_internal(driver, idx, place, filter, quistext)
+                placeN = {getFilterName(filter): name}
+                placeName.append(placeN)
+
+            for place in placeName:
+                for key, value in place.items():
+                    # key = key.replace('-', '\\-')
+                    print(f"> {key}: {value}")
 
     driver.quit()
     return placeName
