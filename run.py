@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.alert import Alert
 
 from driver import create_mobile_driver
-from run_ex import transport, parking, search_naver, replaceHomeSaveUrl
+from run_ex import transport, parking, search_naver, replaceHomeSaveUrl, replaceTransUrl
 import time
 import typer
 import clipboard
@@ -273,7 +273,7 @@ def save_action(driver, answer):
     # saveBtn.click()
     result = driver.execute_script("return document.querySelector('#saveBtn').click();")
     print(f'> SAVE_ACTION : {result}')
-    
+
     time.sleep(PAGE_SLEEP)
     alert_confirm(driver)
 
@@ -369,7 +369,7 @@ def place(idx: int, filter: str = typer.Argument("100"), q: str = typer.Argument
 
 
 @app.command()
-def homesavetelno(q: str = typer.Argument("")):
+def homesavetelnotran(q: str = typer.Argument("")):
     print('HOMESAVETELNO')
     # clipboard_use = False
 
@@ -396,11 +396,14 @@ def homesavetelno(q: str = typer.Argument("")):
             telnoText = tno.text
             print(f'TELNO: {telnoText}')
 
+            tranUrl = replaceTransUrl(current_url)
+            print(f'TRANURL: {tranUrl}')
+
         except Exception:
             print('NOT FOUND')
 
     driver.quit()
-    return home, homesv, telnoText
+    return home, homesv, telnoText, tranUrl
 
 
 @app.command()

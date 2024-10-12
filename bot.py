@@ -3,7 +3,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
 import os
-from run import place, home, homesave, telno, info, homesavetelno
+from run import place, home, homesave, telno, info, homesavetelnotran
 from run_ex import goods
 from dotenv import load_dotenv
 
@@ -139,16 +139,18 @@ def place_impl(user_input: str):
     return result
 
 
-def homesavetelno_result(home: str, homesv: str, telno: str):
+def homesavetelno_result(home: str, homesv: str, telno: str, tranUrl: str):
+    # > HOME URL
+    # `{home}`
     result = f"""
-> HOME URL
-`{home}`
-
-> HOME SAVE URL
+> 플레이스 홈저장 URL
 `{homesv}`
 
-> TELNO
-`{telno}`
+> 전화번호
+`{telno}`    `{telno[-4:]}`
+
+> 주변정류장
+`{tranUrl}`
 
 `.`
 """
@@ -187,11 +189,12 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                 result = info(q, cons)
                 await update.message.reply_text(reply_result(result, "초성"), parse_mode=mode)
             else:
-                home, homesv, telno = homesavetelno(user_input)
-                result = homesavetelno_result(home, homesv, telno)
+                home, homesv, telno, tranUrl = homesavetelnotran(user_input)
+                result = homesavetelno_result(home, homesv, telno, tranUrl)
                 await update.message.reply_text(result, parse_mode=mode)
 
-    except Exception:
+    except Exception as e:
+        print(f'>> HANDLE_INPUT EXCEPTION: {e}')
         keyboard = [
             [InlineKeyboardButton("N번째-명소 9", callback_data='place')],
             [InlineKeyboardButton("홈URL 10", callback_data='home')],
