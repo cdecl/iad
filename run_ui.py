@@ -30,7 +30,7 @@ def on_btnExec_click():
 
     if user_input.split(' ')[0].isnumeric():
         place = place_impl(user_input, getFilterCode("명소"))
-        if len(place) > 1:
+        if len(place) >= 1:
             result = place[0]["명소"]
     else:
         q, cons = parse_consonants_q(user_input)
