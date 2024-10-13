@@ -122,6 +122,9 @@ def update_timer():
                 btnConcat.invoke()
             else:
                 btnPaste.invoke()
+        elif mode == 5:
+            btnRun.invoke()
+            btnCopyTrans.invoke()
 
     save_clipboard = text
     root.after(200, update_timer)
@@ -209,12 +212,14 @@ frame.grid(row=6, column=1, sticky="w")
 auto_var = tk.IntVar()
 radio1 = tk.Radiobutton(frame, text="트리거: 없음", variable=auto_var, value=1)
 radio1.grid(row=0, column=0, padx=3, pady=3, sticky="w")
+radio5 = tk.Radiobutton(frame, text="주변정류장", variable=auto_var, value=5)
+radio5.grid(row=0, column=1, padx=3, pady=3, sticky="w")
 radio2 = tk.Radiobutton(frame, text="홈URL", variable=auto_var, value=2)
-radio2.grid(row=0, column=1, padx=3, pady=3, sticky="w")
+radio2.grid(row=0, column=2, padx=3, pady=3, sticky="w")
 radio3 = tk.Radiobutton(frame, text="홈URL저장", variable=auto_var, value=3)
-radio3.grid(row=0, column=2, padx=3, pady=3, sticky="w")
+radio3.grid(row=0, column=3, padx=3, pady=3, sticky="w")
 radio4 = tk.Radiobutton(frame, text="+초성", variable=auto_var, value=4)
-radio4.grid(row=0, column=3, padx=3, pady=3, sticky="w")
+radio4.grid(row=0, column=4, padx=3, pady=3, sticky="w")
 
 # auto_var = tk.IntVar()
 # radio1 = tk.Radiobutton(root, text="이벤트: 없음", variable=auto_var, value=1)
