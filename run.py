@@ -446,7 +446,7 @@ def homesavetelnotran(q: str = typer.Argument("")):
     url = search_naver(driver, q)
 
     print(f'place url: {url}')
-    home, homesv, telnoText = None, None, None
+    home, homesv, telnoText, tranUrl = None, None, None, None
 
     if 'http' in url:
         driver.get(url)

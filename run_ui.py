@@ -92,6 +92,14 @@ def on_btnCopyTrans_click():
     clipboard.copy(text)
 
 
+def copyParking():
+    time.sleep(INTERVAL)
+    text = lbl_trans.get()
+    text = text.replace('transportation', 'parking')
+    lbl_trans.set(text)
+    clipboard.copy(text)
+
+
 def on_btnRun_click():
     btnPaste.invoke()
     btnExec.invoke()
@@ -142,7 +150,7 @@ lbl_input = tk.StringVar()
 txtInput = tk.Entry(root, width=50, textvariable=lbl_input)
 txtInput.grid(row=0, column=1, padx=3, pady=3)
 
-btnPaste = tk.Button(root, text="붙여넣기(p)", command=on_btnPaste_click)
+btnPaste = tk.Button(root, text="붙여넣기", command=on_btnPaste_click)
 btnPaste.grid(row=0, column=2, padx=3, pady=3, sticky="w")
 
 btnConcat = tk.Button(root, text="+초성실행(o)", command=on_btnConcat_click)
@@ -212,7 +220,7 @@ frame.grid(row=6, column=1, sticky="w")
 auto_var = tk.IntVar()
 radio1 = tk.Radiobutton(frame, text="트리거: 없음", variable=auto_var, value=1)
 radio1.grid(row=0, column=0, padx=3, pady=3, sticky="w")
-radio5 = tk.Radiobutton(frame, text="주변정류장", variable=auto_var, value=5)
+radio5 = tk.Radiobutton(frame, text="주변정류장(b)", variable=auto_var, value=5)
 radio5.grid(row=0, column=1, padx=3, pady=3, sticky="w")
 radio2 = tk.Radiobutton(frame, text="홈URL", variable=auto_var, value=2)
 radio2.grid(row=0, column=2, padx=3, pady=3, sticky="w")
@@ -230,7 +238,6 @@ radio4.grid(row=0, column=4, padx=3, pady=3, sticky="w")
 # radio3.grid(row=8, column=1, padx=3, pady=3, sticky="w")
 
 
-root.bind('p', lambda event: btnPaste.invoke())
 root.bind('o', lambda event: btnConcat.invoke())
 
 root.bind('e', lambda event: btnExec.invoke())
@@ -240,6 +247,9 @@ root.bind('s', lambda event: btnHomeSaveRun.invoke())
 root.bind('h', lambda event: btnHomeCopy.invoke())
 root.bind('f', lambda event: btnCopyHomeSave.invoke())
 root.bind('t', lambda event: btnCopyTelno.invoke())
+
+root.bind('p', lambda event: copyParking())
+
 
 for i in range(1, 9):
     root.bind(str(i), lambda event, num=i: on_num_key_pressed(num))
