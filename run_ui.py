@@ -92,7 +92,7 @@ def on_btnCopyTrans_click():
     clipboard.copy(text)
 
 
-def copyParking():
+def on_btnCopyParking_click():
     time.sleep(INTERVAL)
     text = lbl_trans.get()
     text = text.replace('transportation', 'parking')
@@ -206,6 +206,8 @@ txtTrans.grid(row=4, column=1, padx=3, pady=3)
 btnCopyTrans = tk.Button(root, text="← 복사", command=on_btnCopyTrans_click)
 btnCopyTrans.grid(row=4, column=2, padx=3, pady=3, sticky="w")
 
+btnCopyParking = tk.Button(root, text="← 주차장복사", command=on_btnCopyParking_click)
+btnCopyParking.grid(row=4, column=3, padx=3, pady=3, sticky="w")
 
 btnExec = tk.Button(root, text="실 행 (e)", command=on_btnExec_click)
 btnExec.grid(row=5, column=2, padx=3, pady=3, sticky="w")
@@ -248,7 +250,7 @@ root.bind('h', lambda event: btnHomeCopy.invoke())
 root.bind('f', lambda event: btnCopyHomeSave.invoke())
 root.bind('t', lambda event: btnCopyTelno.invoke())
 
-root.bind('p', lambda event: copyParking())
+root.bind('p', lambda event: btnCopyParking.invoke())
 
 
 for i in range(1, 9):

@@ -160,8 +160,10 @@ def homesavetelno_result(home: str, homesv: str, telno: str, tranUrl: str):
 > 전화번호
 `{telno}`    `{telno[-4:]}`
 
-> 주변정류장
+> 주변정류장\\/주차장
 `{tranUrl}`
+
+`{tranUrl.replace('transportation', 'parking')}`
 
 `.`
 """
