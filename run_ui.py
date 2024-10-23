@@ -224,9 +224,9 @@ radio1 = tk.Radiobutton(frame, text="트리거: 없음", variable=auto_var, valu
 radio1.grid(row=0, column=0, padx=3, pady=3, sticky="w")
 radio5 = tk.Radiobutton(frame, text="주변정류장(b)", variable=auto_var, value=5)
 radio5.grid(row=0, column=1, padx=3, pady=3, sticky="w")
-radio2 = tk.Radiobutton(frame, text="홈URL", variable=auto_var, value=2)
-radio2.grid(row=0, column=2, padx=3, pady=3, sticky="w")
-radio3 = tk.Radiobutton(frame, text="홈URL저장", variable=auto_var, value=3)
+# radio2 = tk.Radiobutton(frame, text="홈URL", variable=auto_var, value=2)
+# radio2.grid(row=0, column=2, padx=3, pady=3, sticky="w")
+radio3 = tk.Radiobutton(frame, text="홈URL저장      |", variable=auto_var, value=3)
 radio3.grid(row=0, column=3, padx=3, pady=3, sticky="w")
 radio4 = tk.Radiobutton(frame, text="+초성", variable=auto_var, value=4)
 radio4.grid(row=0, column=4, padx=3, pady=3, sticky="w")
@@ -252,8 +252,7 @@ root.bind('t', lambda event: btnCopyTelno.invoke())
 
 root.bind('p', lambda event: btnCopyParking.invoke())
 
-
-for i in range(1, 9):
+for i in range(1, 10):
     root.bind(str(i), lambda event, num=i: on_num_key_pressed(num))
 
 auto_var.set(1)
