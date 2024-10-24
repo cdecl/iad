@@ -231,14 +231,6 @@ radio3.grid(row=0, column=3, padx=3, pady=3, sticky="w")
 radio4 = tk.Radiobutton(frame, text="+초성", variable=auto_var, value=4)
 radio4.grid(row=0, column=4, padx=3, pady=3, sticky="w")
 
-# auto_var = tk.IntVar()
-# radio1 = tk.Radiobutton(root, text="이벤트: 없음", variable=auto_var, value=1)
-# radio1.grid(row=6, column=1, padx=3, pady=3, sticky="w")
-# radio2 = tk.Radiobutton(root, text="이벤트: 홈URL;초성", variable=auto_var, value=2)
-# radio2.grid(row=7, column=1, padx=3, pady=3, sticky="w")
-# radio3 = tk.Radiobutton(root, text="이벤트: 홈URL저장", variable=auto_var, value=3)
-# radio3.grid(row=8, column=1, padx=3, pady=3, sticky="w")
-
 
 root.bind('o', lambda event: btnConcat.invoke())
 
