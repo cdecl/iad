@@ -4,7 +4,7 @@ BASEDIR=$(cd $(dirname "$0") && pwd)
 source $BASEDIR/venv/bin/activate
 
 # 스크립트 실행 경로 설정 (예: bot.py가 있는 경로)
-SCRIPT_PATH="$BASEDIR/bot.py"
+SCRIPT_PATH="$BASEDIR/bot.py run"
 LOG_FILE="$BASEDIR/bot.log"
 PID_FILE="$BASEDIR/bot.pid"
 
