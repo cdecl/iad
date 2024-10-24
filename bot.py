@@ -1,11 +1,17 @@
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters, CallbackQueryHandler
+from telegram.helpers import escape_markdown
 
 import os
+import asyncio
 from run import place_custom, home, homesave, telno, info, homesavetelnotran, PLACE_PARAM
 from run_ex import goods
 from dotenv import load_dotenv
+import typer
+
+app = typer.Typer()
+
 
 # 로깅 설정
 logging.basicConfig(
@@ -221,7 +227,8 @@ async def handle_input(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         await update.message.reply_text("어떤 작업을 수행할까요?", reply_markup=reply_markup)
 
 
-def main():
+@app.command()
+def run():
     load_dotenv()
     TOKEN = os.getenv('TELEGRAM_TOKEN')
     app = ApplicationBuilder().token(TOKEN).build()
@@ -238,5 +245,24 @@ def main():
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
-if __name__ == '__main__':
-    main()
+@app.command()
+def send(msg: str):
+    load_dotenv()
+    TOKEN = os.getenv('TELEGRAM_TOKEN')
+    CHAT_ID = os.getenv('CHAT_ID')
+
+    msg = f"""```
+{escape_markdown(msg, version=2)}
+```
+"""
+    print(msg)
+
+    bot = Bot(token=TOKEN)
+    try:
+        asyncio.run(bot.send_message(chat_id=CHAT_ID, text=msg, parse_mode="MarkdownV2"))
+    except Exception as e:
+        print(e)
+
+
+if __name__ == "__main__":
+    app()
