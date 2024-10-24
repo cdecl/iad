@@ -18,9 +18,13 @@ def beep():
 
 def on_num_key_pressed(n: str):
     on_btnPaste_click()
-    lbl_input.set(f'{n} {lbl_input.get()}')
-    root.update()
-    btnExec.invoke()
+    if n == 'b':
+        btnExec.invoke()
+        btnCopyTrans.invoke()
+    else:
+        lbl_input.set(f'{n} {lbl_input.get()}')
+        root.update()
+        btnExec.invoke()
 
 
 # 버튼 클릭 시 실행되는 함수
@@ -243,6 +247,7 @@ root.bind('f', lambda event: btnCopyHomeSave.invoke())
 root.bind('t', lambda event: btnCopyTelno.invoke())
 
 root.bind('p', lambda event: btnCopyParking.invoke())
+root.bind('b', lambda event: on_num_key_pressed('b'))
 
 for i in range(1, 10):
     root.bind(str(i), lambda event, num=i: on_num_key_pressed(num))
