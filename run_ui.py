@@ -18,7 +18,7 @@ def beep():
 
 def on_num_key_pressed(n: str):
     on_btnPaste_click()
-    if n == 'b':
+    if n == 'm':
         btnExec.invoke()
         btnCopyTrans.invoke()
     else:
@@ -247,7 +247,7 @@ root.bind('f', lambda event: btnCopyHomeSave.invoke())
 root.bind('t', lambda event: btnCopyTelno.invoke())
 
 root.bind('p', lambda event: btnCopyParking.invoke())
-root.bind('b', lambda event: on_num_key_pressed('b'))
+root.bind('m', lambda event: on_num_key_pressed('m'))
 
 for i in range(1, 10):
     root.bind(str(i), lambda event, num=i: on_num_key_pressed(num))
